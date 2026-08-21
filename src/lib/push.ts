@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 // VAPID application server public key — safe to ship to the browser.
 export const VAPID_PUBLIC_KEY =
-  "BGEUHYqubap5DNOYjywXmIU3ZE9AnG2BW9_P7Qi3L8DTMpEHqlVHJHXYrCD-948fkZphZzeJaeN__nIiYaPyvKg";
+  "BNvLr_l2aUCmoS5Z5NXSuwcKz3CdjzH-lFVw-E3viEs7PWBKkK4iBZiGXrykRAq4hK-jstI6TxqvuT4WkQg4JOc";
 
 export const pushSupported = () =>
   typeof window !== "undefined" &&
