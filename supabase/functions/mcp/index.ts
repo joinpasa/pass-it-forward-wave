@@ -125,7 +125,7 @@ var get_pledge_totals_default = defineTool4({
 });
 
 // src/lib/mcp/index.ts
-var projectRef = "kifjuljtklfayrivzmyq";
+var projectRef = "gqvutfdwdvylyjccivzb";
 var mcp_default = defineMcp({
   name: "pasalopalante-mcp",
   title: "P\xE1salo Pa'lante",
