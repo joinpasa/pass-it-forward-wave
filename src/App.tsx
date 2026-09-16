@@ -28,6 +28,7 @@ import PrivacyPage from "./pages/PrivacyPage.tsx";
 import CommunityGuidelinesPage from "./pages/CommunityGuidelinesPage.tsx";
 import ContactPage from "./pages/ContactPage.tsx";
 import AboutPage from "./pages/AboutPage.tsx";
+import PartnersPage from "./pages/PartnersPage.tsx";
 import ProgramsPage from "./pages/ProgramsPage.tsx";
 import GetInvolvedPage from "./pages/GetInvolvedPage.tsx";
 import OAuthConsent from "./pages/OAuthConsent.tsx";

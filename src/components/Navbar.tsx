@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { user } = useAuth();
   const { shareModalOpen } = useUI();
   const [navStats, setNavStats] = useState<{ acts: number; streak: number }>({ acts: 0, streak: 0 });
@@ -25,6 +25,7 @@ const Navbar = () => {
     { label: t.navbar.ideas, href: "/ideas" },
     { label: t.navbar.wall, href: "/wall" },
     { label: t.mapPage.title, href: "/map" },
+    { label: lang === "es" ? "Socios" : "Partners", href: "/partners" },
   ];
 
   useEffect(() => {
