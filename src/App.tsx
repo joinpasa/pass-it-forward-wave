@@ -28,6 +28,7 @@ import PrivacyPage from "./pages/PrivacyPage.tsx";
 import CommunityGuidelinesPage from "./pages/CommunityGuidelinesPage.tsx";
 import ContactPage from "./pages/ContactPage.tsx";
 import AboutPage from "./pages/AboutPage.tsx";
+import PartnersPage from "./pages/PartnersPage.tsx";
 import ProgramsPage from "./pages/ProgramsPage.tsx";
 import GetInvolvedPage from "./pages/GetInvolvedPage.tsx";
 import OAuthConsent from "./pages/OAuthConsent.tsx";
@@ -110,6 +111,7 @@ const App = () => (
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/programs" element={<ProgramsPage />} />
+              <Route path="/partners" element={<PartnersPage />} />
               <Route path="/how-it-works" element={<ProgramsPage />} />
               <Route path="/get-involved" element={<GetInvolvedPage />} />
               <Route path="/app" element={<AppShell />}>
