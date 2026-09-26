@@ -7,9 +7,9 @@ interface SEOProps {
   image?: string;
 }
 
-const SITE_URL = "https://pasalopalante.com";
+const SITE_URL = "https://passkindnessforward.com";
 const DEFAULT_IMAGE =
-  "https://storage.googleapis.com/gpt-engineer-file-uploads/nBBqTqafpbTS4KRb7ci12U6orRD2/social-images/social-1780335651701-social-1773740565066-Untitled-1.webp";
+  "https://passkindnessforward.com/__l5e/assets-v1/cbcb31bf-4387-4d3e-a219-a7072851afae/pass-kindness-forward-share.jpg";
 
 function setMeta(attr: "name" | "property", key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);

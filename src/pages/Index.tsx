@@ -21,8 +21,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Pásalo Pa'lante — Sparking 1 Billion Acts of Kindness Worldwide"
-        description="Join Pásalo Pa'lante, a global kindness movement by Te Amo PR. Commit, share, and ripple 1 billion acts of kindness from Nov 1 to Jan 31."
+        title="Pass Kindness Forward — One Act Can Inspire Another"
+        description="Join Pass Kindness Forward and help spark 1 billion acts of kindness worldwide. One act can inspire another."
         path="/"
       />
       <Navbar />

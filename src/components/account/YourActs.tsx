@@ -211,7 +211,7 @@ const YourActs = ({ userId }: { userId: string }) => {
         }}
         getImageBlob={generatePng}
         shareUrl={withReferral(`${siteOrigin()}/wave/${shareAct?.id ?? ""}`, referralCode)}
-        shareText={`${shareAct?.description || t.share.defaultGraphicLine} #PasaloPalante`}
+        shareText={`${shareAct?.description || t.share.defaultGraphicLine} #PassKindnessForward`}
         title={t.share.shareDialog.title}
         description={t.share.shareDialog.description}
         helperText={t.share.shareDialog.helper}

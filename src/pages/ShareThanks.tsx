@@ -128,7 +128,7 @@ function Inner() {
   }
 
   const shareUrl = id ? withReferral(`${siteOrigin()}/wave/${id}`, referralCode) : "";
-  const shareText = `${act?.description || t.share.defaultGraphicLine} #PasaloPalante`;
+  const shareText = `${act?.description || t.share.defaultGraphicLine} #PassKindnessForward`;
 
   const shareActions = useShareActions({
     getImageBlob: generatePng,
