@@ -95,7 +95,7 @@ const KindnessCard = forwardRef<HTMLDivElement, Props>(function KindnessCard(
         className="text-[10px] uppercase tracking-[0.25em] font-bold"
         style={{ color: TEXT_COLOR }}
       >
-        Pásalo Pa'lante
+        Pass Kindness Forward
       </span>
       {modeLabel && (
         <span
@@ -121,7 +121,7 @@ const KindnessCard = forwardRef<HTMLDivElement, Props>(function KindnessCard(
   const renderLogoWatermark = () => (
     isBranded && (
       <img
-        src="/logo-PPL.png"
+        src="/logo-PKF-icon.png"
         alt=""
         crossOrigin="anonymous"
         className="absolute bottom-3 right-3 z-20 w-8 h-8 object-contain opacity-80"
