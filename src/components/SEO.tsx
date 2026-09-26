@@ -9,7 +9,7 @@ interface SEOProps {
 
 const SITE_URL = "https://passkindnessforward.com";
 const DEFAULT_IMAGE =
-  "https://passkindnessforward.com/__l5e/assets-v1/cbcb31bf-4387-4d3e-a219-a7072851afae/pass-kindness-forward-share.jpg";
+  "https://passkindnessforward.com/__l5e/assets-v1/317502d6-7f7b-4ef3-9eba-1009dd329054/pass-kindness-forward-share-logo.jpg";
 
 function setMeta(attr: "name" | "property", key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
