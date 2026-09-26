@@ -190,6 +190,46 @@ export default function PrivacyPage() {
               <p>{t("You may unsubscribe from non-essential emails at any time. We may still send transactional or administrative messages when necessary (donation receipts, legal notices, registration confirmations, direct replies).", "Puedes darte de baja de correos no esenciales en cualquier momento. Aún podemos enviar mensajes transaccionales o administrativos cuando sea necesario (recibos, avisos legales, confirmaciones, respuestas directas).")}</p>
             </Section>
 
+            <Section n={8} title={t("Chatbot and Automated Communications", "Chatbot y Comunicaciones Automatizadas")}>
+              <p>
+                {t(
+                  "Our website uses an AI-powered chatbot (\"the Chatbot\") operated through Marketing Hub AI Agent, a platform developed by Adam Terpstra / Scale Smart. The Chatbot is used in connection with the Pass Kindness Forward initiative.",
+                  "Nuestro sitio web utiliza un chatbot con inteligencia artificial (\"el Chatbot\") operado a través de Marketing Hub AI Agent, una plataforma desarrollada por Adam Terpstra / Scale Smart. El Chatbot se utiliza en el contexto de la iniciativa Pass Kindness Forward."
+                )}
+              </p>
+              <p>{t("When you interact with the Chatbot, we may collect the following information that you voluntarily provide:", "Cuando interactúa con el Chatbot, podemos recopilar la siguiente información que usted proporciona voluntariamente:")}</p>
+              <ul className="list-disc pl-6 space-y-1">
+                <li>{t("Name", "Nombre")}</li>
+                <li>{t("Email address", "Dirección de correo electrónico")}</li>
+                <li>{t("Country", "País")}</li>
+                <li>{t("Organization or institutional affiliation (where applicable)", "Nombre de la organización o institución (cuando corresponda)")}</li>
+              </ul>
+              <p>
+                {t(
+                  "This information is stored and managed through GoHighLevel (GHL), a customer relationship management (CRM) platform used by Te Amo PR.",
+                  "Esta información se almacena y gestiona a través de GoHighLevel (GHL), una plataforma de gestión de relaciones con contactos (CRM) utilizada por Te Amo PR."
+                )}
+              </p>
+              <p>{t("Information collected through the Chatbot may be used to:", "La información recopilada a través del Chatbot puede utilizarse para:")}</p>
+              <ul className="list-disc pl-6 space-y-1">
+                <li>{t("Respond to your questions and requests", "Responder sus preguntas y solicitudes")}</li>
+                <li>{t("Send you onboarding materials and follow-up communications related to Pass Kindness Forward", "Enviarle materiales de incorporación y comunicaciones de seguimiento relacionadas con Pass Kindness Forward")}</li>
+                <li>{t("Track your participation interest and status within the movement", "Dar seguimiento a su interés y estado de participación en el movimiento")}</li>
+              </ul>
+              <p>
+                {t(
+                  "Email addresses collected through the Chatbot will not be used for newsletters, marketing campaigns, or promotional communications unrelated to Pass Kindness Forward.",
+                  "Las direcciones de correo electrónico recopiladas a través del Chatbot no se utilizarán para newsletters, campañas de marketing ni comunicaciones promocionales no relacionadas con Pass Kindness Forward."
+                )}
+              </p>
+              <p>
+                {t(
+                  "Conversations held through the Chatbot are stored on the Marketing Hub AI Agent platform. Contact data is retained in GoHighLevel (GHL) for as long as reasonably necessary to fulfill the purposes described in this Policy.",
+                  "Las conversaciones realizadas a través del Chatbot se almacenan en la plataforma Marketing Hub AI Agent. Los datos de contacto se conservan en GoHighLevel (GHL) durante el tiempo que sea razonablemente necesario para cumplir con los propósitos descritos en esta Política."
+                )}
+              </p>
+            </Section>
+
             <Section n={9} title={t("Cookies and Analytics", "Cookies y analíticas")}>
               <p>{t("Pásalo Pa'lante may use cookies, pixels, analytics tools, or similar technologies to understand website traffic, improve performance, measure campaign effectiveness, prevent spam, remember preferences, and support outreach connected to the nonprofit mission. These tools may include Google Analytics, Google Ads conversion tracking, Meta tools, email marketing analytics, or similar services. Users may control cookies through browser settings; disabling them may affect some functionality.", "Pásalo Pa'lante puede usar cookies, pixeles, herramientas de analítica o tecnologías similares para entender el tráfico, mejorar el desempeño, medir la efectividad de campañas, prevenir spam, recordar preferencias y apoyar el alcance de la misión. Estas herramientas pueden incluir Google Analytics, seguimiento de conversiones de Google Ads, herramientas de Meta, analíticas de correo o servicios similares. Los usuarios pueden controlar las cookies desde su navegador; deshabilitarlas puede afectar funcionalidad.")}</p>
             </Section>
