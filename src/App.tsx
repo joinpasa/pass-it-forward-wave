@@ -35,6 +35,7 @@ import ProgramsPage from "./pages/ProgramsPage.tsx";
 import GetInvolvedPage from "./pages/GetInvolvedPage.tsx";
 import SchoolsEducatorsPage from "./pages/SchoolsEducatorsPage.tsx";
 import NonprofitsFaithPage from "./pages/NonprofitsFaithPage.tsx";
+import PartnersPage from "./pages/PartnersPage.tsx";
 import AmbassadorsPage from "./pages/AmbassadorsPage.tsx";
 import ScrollToTopOnRouteChange from "@shared/components/ScrollToTopOnRouteChange";
 import StandaloneHomeRedirect from "./components/StandaloneHomeRedirect";
@@ -112,6 +113,7 @@ const App = () => (
               <Route path="/get-involved/schools" element={<SchoolsEducatorsPage />} />
               <Route path="/get-involved/nonprofits" element={<NonprofitsFaithPage />} />
               <Route path="/get-involved/ambassadors" element={<AmbassadorsPage />} />
+              <Route path="/partners" element={<PartnersPage />} />
               <Route path="/register" element={<Navigate to="/commit" replace />} />
               <Route path="/volunteer" element={<Navigate to="/commit" replace />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
