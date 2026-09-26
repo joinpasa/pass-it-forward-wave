@@ -12,7 +12,7 @@ const pointers = import.meta.glob<{ url?: string; default?: { url: string } }>(
 );
 
 const assetUrl = (filename: string): string | undefined => {
-  const key = Object.keys(pointers).find((k) => k.endsWith(`/${filename}.asset.json`));
+  const key = Object.keys(pointers).find((k) => k.includes(`/${filename}.`));
   if (!key) return undefined;
   return pointers[key].url ?? pointers[key].default?.url;
 };
