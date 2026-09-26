@@ -1,3 +1,4 @@
+declare const __APP_BASE_URL__: string;
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Download, Share, X, Plus, Smartphone } from "lucide-react";
