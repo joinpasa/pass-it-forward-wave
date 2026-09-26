@@ -1,5 +1,5 @@
 import { ExternalLink } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 import { volunteerDirectories } from "@/data/volunteerDirectories";
 
 export default function VolunteerDirectory() {

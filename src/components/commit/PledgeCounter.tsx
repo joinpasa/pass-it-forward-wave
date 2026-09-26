@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@shared/integrations/supabase/client";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 
 interface Props {
   className?: string;

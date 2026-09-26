@@ -1,4 +1,4 @@
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 
 /**
  * Minimal, light-text legal footer for popup-style pages (e.g. share flow).

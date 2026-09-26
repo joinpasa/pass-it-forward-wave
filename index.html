@@ -7,16 +7,38 @@
     <meta name="description" content="Pásalo Pa'lante is a global kindness movement by Te Amo PR, a 501(c)(3) nonprofit. Join us to spark 1 billion acts of kindness from November 1 to January 31." />
     <meta name="author" content="Te Amo PR" />
 
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="theme-color" content="#faf8f4" />
+    <!-- Google tag (gtag.js) — measurement ID picked at runtime by hostname.
+         passkindnessforward.com is routed to this exact same build (same
+         Cloudflare Worker) as pasalopalante.com, so a static pair of
+         gtag('config', ...) calls would fire BOTH tags for every visitor on
+         either domain, mixing each site's traffic into the other's GA4
+         property. Loading gtag.js dynamically and configuring only the ID
+         that matches the current hostname keeps each domain's analytics
+         separate. Anything not explicitly PKF (including localhost/preview
+         URLs) falls back to Pásalo Pa'lante's own ID. -->
+    <script>
+      (function () {
+        var GA_IDS_BY_HOST = {
+          'passkindnessforward.com': 'G-W9L6MQK6B9',
+          'www.passkindnessforward.com': 'G-W9L6MQK6B9',
+        };
+        var PPL_GA_ID = 'G-1Z2QVNXRW0';
+        var id = GA_IDS_BY_HOST[window.location.hostname] || PPL_GA_ID;
+
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
+        document.head.appendChild(s);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', id);
+      })();
+    </script>
+
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="Pásalo" />
-
-
-    
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://pasalopalante.com/" />
@@ -89,48 +111,45 @@
         padding: 2rem 1.25rem;
         line-height: 1.6;
       }
-      #ppl-splash {
-        position: fixed;
-        inset: 0;
-        z-index: 2147483000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: #faf8f4;
-        transition: opacity 260ms ease, visibility 260ms ease;
-      }
-      #ppl-splash img {
-        width: 132px;
-        height: auto;
-        opacity: 0;
-        animation: ppl-splash-in 600ms ease 80ms forwards;
-      }
-      @keyframes ppl-splash-in {
-        from { opacity: 0; transform: scale(0.96); }
-        to { opacity: 1; transform: scale(1); }
-      }
-      html.app-ready #ppl-splash {
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-      }
       html.app-ready #root {
         max-width: none;
         margin: 0;
         padding: 0;
       }
-      @media (prefers-reduced-motion: reduce) {
-        #ppl-splash, #ppl-splash img { transition: none; animation: none; opacity: 1; }
+      /* Paints instantly (no JS needed) to cover the gap between first HTML
+         paint and React mounting - logo only, never the crawler fallback text. */
+      #boot-splash {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #faf8f4;
+        z-index: 9999;
+      }
+      #boot-splash img {
+        height: 56px;
+        animation: boot-splash-pulse 1.6s ease-in-out infinite;
+      }
+      html.app-ready #boot-splash {
+        display: none;
+      }
+      @keyframes boot-splash-pulse {
+        0%, 100% { opacity: 0.55; }
+        50% { opacity: 1; }
       }
     </style>
   </head>
 
   <body>
-    <div id="ppl-splash" aria-hidden="true">
-      <img src="/logo-PPL.png" alt="" width="132" height="132" />
-    </div>
     <div id="root">
-      <!-- Crawler-readable fallback content. Replaced by the React app on load. -->
+      <div id="boot-splash" aria-hidden="true">
+        <img src="/logo-PPL.png" alt="" />
+      </div>
+      <!-- Crawler-readable fallback content for clients that don't run JS.
+           Real browsers never render <noscript> contents, so this never
+           flashes on screen - the boot-splash above covers that gap instead. -->
+      <noscript>
       <header>
         <h1>Pásalo Pa'lante — A Global Kindness Movement by Te Amo PR</h1>
         <p>
@@ -313,6 +332,7 @@
           </p>
         </footer>
       </main>
+      </noscript>
     </div>
 
     <script type="module" src="/src/main.tsx"></script>

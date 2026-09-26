@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Loader2, RefreshCw, Sparkles } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useUI } from "@/contexts/UIContext";
-import { supabase } from "@/integrations/supabase/client";
-import ShareActFlow from "@/components/share/ShareActFlow";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@shared/components/ui/dialog";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useUI } from "@shared/contexts/UIContext";
+import { supabase } from "@shared/integrations/supabase/client";
+import ShareActFlow from "@shared/components/share/ShareActFlow";
 import { toast } from "sonner";
 
 interface Act {
@@ -16,7 +16,7 @@ interface Act {
 
 export default function InspirationCard() {
   const { t, lang } = useLanguage();
-  const { setShareModalOpen } = useUI();
+  const { setLocalShareFlowOpen } = useUI();
   const [acts, setActs] = useState<Act[] | null>(null);
   const [idx, setIdx] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -45,9 +45,9 @@ export default function InspirationCard() {
   useEffect(() => { fetchActs(false); /* eslint-disable-next-line */ }, [lang]);
 
   useEffect(() => {
-    setShareModalOpen(open);
-    return () => setShareModalOpen(false);
-  }, [open, setShareModalOpen]);
+    setLocalShareFlowOpen(open);
+    return () => setLocalShareFlowOpen(false);
+  }, [open, setLocalShareFlowOpen]);
 
   function next() {
     if (!acts || acts.length === 0) return;
@@ -99,7 +99,7 @@ export default function InspirationCard() {
             </button>
             <Link
               to="/inspiration"
-              className="inline-flex items-center gap-1 text-sm text-terracotta hover:underline"
+              className="inline-flex items-center gap-1 text-sm text-warm-sky hover:underline"
             >
               {t.account.moreInspiration} <ArrowRight size={14} />
             </Link>

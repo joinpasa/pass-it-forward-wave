@@ -2,11 +2,13 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useUI } from "@shared/contexts/UIContext";
 import { Link } from "react-router-dom";
 
 export default function ProgramsPage() {
   const { lang } = useLanguage();
+  const { openShareModal } = useUI();
   const isEs = lang === "es";
   const t = (en: string, es: string) => (isEs ? es : en);
 
@@ -85,7 +87,7 @@ export default function ProgramsPage() {
         <article className="max-w-4xl mx-auto">
           <header className="mb-12 text-center">
             <p className="eyebrow">Pásalo Pa'lante</p>
-            <h1 className="headline-xl text-warm-earth mt-3 mb-4">
+            <h1 className="headline-xl text-foreground mt-3 mb-4">
               {t("Programs & How It Works", "Programas y Cómo Funciona")}
             </h1>
             <p className="text-base md:text-lg text-foreground/75 leading-relaxed max-w-2xl mx-auto">
@@ -100,19 +102,29 @@ export default function ProgramsPage() {
             {programs.map((p) => (
               <section
                 key={p.title}
-                className="bg-white/70 border border-warm-earth/10 rounded-2xl p-6 md:p-8"
+                className="bg-white/70 border border-border rounded-2xl p-6 md:p-8"
               >
-                <h2 className="font-display text-2xl text-warm-earth mb-3">{p.title}</h2>
+                <h2 className="font-display text-2xl text-foreground mb-3">{p.title}</h2>
                 <p className="text-foreground/80 leading-relaxed mb-4">{p.body}</p>
-                <Link to={p.link} className="text-primary hover:underline font-medium">
-                  {p.cta} →
-                </Link>
+                {p.link === "/share" ? (
+                  <button
+                    type="button"
+                    onClick={() => openShareModal()}
+                    className="text-warm-sky hover:underline font-medium"
+                  >
+                    {p.cta} →
+                  </button>
+                ) : (
+                  <Link to={p.link} className="text-warm-sky hover:underline font-medium">
+                    {p.cta} →
+                  </Link>
+                )}
               </section>
             ))}
           </div>
 
-          <section className="mt-16 text-center bg-warm-earth/5 border border-warm-earth/10 rounded-2xl p-8">
-            <h2 className="font-display text-2xl text-warm-earth mb-3">
+          <section className="mt-16 text-center bg-muted border border-border rounded-2xl p-8">
+            <h2 className="font-display text-2xl text-foreground mb-3">
               {t("The Kindness Season", "La Temporada de Bondad")}
             </h2>
             <p className="text-foreground/80 leading-relaxed max-w-2xl mx-auto">

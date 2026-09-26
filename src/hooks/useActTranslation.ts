@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@shared/integrations/supabase/client";
 
-type Lang = "en" | "zh" | "hi" | "es" | "fr" | "ar" | "bn" | "pt" | "ru" | "de";
+type Lang = "en" | "zh" | "hi" | "es" | "fr" | "ar" | "bn" | "pt" | "ru" | "de" | "sl";
 
 interface Result {
   translation: string | null;
@@ -19,7 +19,7 @@ const inflight = new Map<string, Promise<string | null>>();
 function normalize(lang: string | null | undefined): Lang | null {
   if (!lang) return null;
   const l = lang.toLowerCase().slice(0, 2);
-  const supported = ["en", "zh", "hi", "es", "fr", "ar", "bn", "pt", "ru", "de"];
+  const supported = ["en", "zh", "hi", "es", "fr", "ar", "bn", "pt", "ru", "de", "sl"];
   if (supported.includes(l)) return l as Lang;
   return null;
 }

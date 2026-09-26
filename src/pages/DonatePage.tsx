@@ -3,7 +3,7 @@ import DonateStrip from "@/components/DonateStrip";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 
 const DonatePage = () => {
   const { lang } = useLanguage();
@@ -22,7 +22,7 @@ const DonatePage = () => {
         <section className="section-padding pb-12 max-w-3xl mx-auto">
           <header className="text-center mb-10">
             <p className="eyebrow">Pásalo Pa'lante</p>
-            <h1 className="headline-xl text-warm-earth mt-3 mb-4">
+            <h1 className="headline-xl text-foreground mt-3 mb-4">
               {t("Donate", "Dona")}
             </h1>
             <p className="text-base md:text-lg text-foreground/75 leading-relaxed">
@@ -33,8 +33,8 @@ const DonatePage = () => {
             </p>
           </header>
 
-          <div className="bg-white/70 border border-warm-earth/10 rounded-2xl p-6 md:p-8 space-y-4">
-            <h2 className="font-display text-2xl text-warm-earth">
+          <div className="bg-white/70 border border-border rounded-2xl p-6 md:p-8 space-y-4">
+            <h2 className="font-display text-2xl text-foreground">
               {t("How to donate securely", "Cómo donar de forma segura")}
             </h2>
             <ol className="list-decimal pl-6 space-y-3 text-foreground/85 leading-relaxed">
@@ -62,7 +62,7 @@ const DonatePage = () => {
                   "Email ",
                   "Escribe a "
                 )}
-                <a href="mailto:info@teamopr.org" className="text-primary underline">info@teamopr.org</a>
+                <a href="mailto:info@teamopr.org" className="text-warm-sky underline">info@teamopr.org</a>
                 {t(
                   " and our team will send banking instructions and a sponsorship deck.",
                   " y nuestro equipo te enviará instrucciones bancarias y un dossier de patrocinio."
@@ -70,7 +70,7 @@ const DonatePage = () => {
               </li>
             </ol>
 
-            <div className="border-t border-warm-earth/10 pt-4 text-sm text-foreground/70 space-y-1">
+            <div className="border-t border-border pt-4 text-sm text-foreground/70 space-y-1">
               <p>
                 <strong>{t("Tax receipts:", "Recibos de impuestos:")}</strong>{" "}
                 {t(
@@ -87,7 +87,7 @@ const DonatePage = () => {
               </p>
               <p>
                 <strong>{t("Questions:", "Preguntas:")}</strong>{" "}
-                <a href="mailto:info@teamopr.org" className="text-primary underline">info@teamopr.org</a> · (787) 705-0778
+                <a href="mailto:info@teamopr.org" className="text-warm-sky underline">info@teamopr.org</a> · (787) 705-0778
               </p>
             </div>
           </div>

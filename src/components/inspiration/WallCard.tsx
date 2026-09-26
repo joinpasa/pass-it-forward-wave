@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Heart, Play, Loader2 } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { pickCardGradient } from "@/lib/cardGradients";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { pickCardGradient } from "@shared/lib/cardGradients";
 import { useActTranslation } from "@/hooks/useActTranslation";
-import PalanteArrow from "@/components/icons/PalanteArrow";
-import { splitKindnessTag } from "@/lib/splitKindnessTag";
+import PalanteArrow from "@shared/components/icons/PalanteArrow";
+import { splitKindnessTag } from "@shared/lib/splitKindnessTag";
 
 
 export type WallMode = "performed" | "received" | "witnessed";

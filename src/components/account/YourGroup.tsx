@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { supabase } from "@shared/integrations/supabase/client";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { Skeleton } from "@shared/components/ui/skeleton";
+import { Button } from "@shared/components/ui/button";
+import { Input } from "@shared/components/ui/input";
 import { toast } from "sonner";
 
 interface Org {
@@ -54,17 +54,20 @@ const YourGroup = ({ userId }: { userId: string }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     (async () => {
       const { data: m } = await supabase
         .from("org_members")
         .select("org_id, is_leader, organizations(id,name,logo_url,chapter)")
         .eq("user_id", userId)
         .maybeSingle();
+      if (cancelled) return;
       if (m && (m as any).organizations) {
         const o = (m as any).organizations as Org;
         setOrg(o);
         setIsLeader(!!(m as any).is_leader);
         const { data: s } = await supabase.rpc("org_stats", { _org_id: (m as any).org_id });
+        if (cancelled) return;
         if (s && s[0]) setStats(s[0] as Stats);
 
         const { data: gc } = await supabase
@@ -75,6 +78,7 @@ const YourGroup = ({ userId }: { userId: string }) => {
           .order("created_at", { ascending: false })
           .limit(1)
           .maybeSingle();
+        if (cancelled) return;
         if (gc) {
           setCommitment(gc as GroupCommitment);
           setDraftPledge((gc as GroupCommitment).pledge_count);
@@ -88,14 +92,17 @@ const YourGroup = ({ userId }: { userId: string }) => {
             .ilike("name", o.name)
             .is("chapter", null)
             .maybeSingle();
+          if (cancelled) return;
           if (parent?.id) {
             const { data: ps } = await supabase.rpc("org_stats", { _org_id: parent.id });
+            if (cancelled) return;
             if (ps && ps[0]) setParentStats(ps[0] as Stats);
           }
         }
       }
-      setLoading(false);
+      if (!cancelled) setLoading(false);
     })();
+    return () => { cancelled = true; };
   }, [userId]);
 
   const saveGroupPledge = async () => {

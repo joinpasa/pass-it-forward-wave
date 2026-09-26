@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { Copy, Check, Users } from "lucide-react";
 import { toast } from "sonner";
 
-import { supabase } from "@/integrations/supabase/client";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@shared/integrations/supabase/client";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useReferralCode } from "@/hooks/useReferralCode";
-import { siteOrigin } from "@/lib/referral";
-import { Skeleton } from "@/components/ui/skeleton";
+import { siteOrigin } from "@shared/lib/referral";
+import { Skeleton } from "@shared/components/ui/skeleton";
+import InviteQrCode from "./InviteQrCode";
 
 interface Stats {
   joined_count: number;
@@ -107,6 +108,7 @@ const YourInvitations = ({ userId }: { userId: string }) => {
               <Copy size={16} className="text-foreground/60 shrink-0" />
             )}
           </button>
+          <InviteQrCode value={inviteLink} />
         </div>
       )}
     </section>

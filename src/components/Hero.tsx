@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { RippleCanvas } from "@/components/ui/ripple-canvas";
-import TopActsStack from "@/components/hero/TopActsStack";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { RippleCanvas } from "@shared/components/ui/ripple-canvas";
+import { smoothScrollTo } from "@shared/lib/smoothScrollTo";
+import HeroVideo from "@/components/hero/HeroVideo";
 
 const COUNTDOWN_TARGET = new Date("2026-11-01T00:00:00-04:00").getTime();
 
@@ -54,7 +55,7 @@ const Hero = () => {
 
       <div className="relative z-10 section-padding w-full pt-32 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-          <div className="lg:col-span-7">
+          <div className="lg:col-span-6">
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -68,7 +69,7 @@ const Hero = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.8 }}
-              className="headline-xl text-warm-cream mb-8"
+              className="headline-xl lg:text-5xl xl:text-6xl text-warm-cream mb-8 [&_em]:text-warm-gold"
             >
               <span dangerouslySetInnerHTML={{ __html: t.hero.title }} />
             </motion.h1>
@@ -128,13 +129,30 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.1 }}
-              className="flex flex-col sm:flex-row gap-4"
+              className="flex flex-wrap items-center gap-[18px]"
             >
-              <a
-                href="/get-involved"
-                className="btn-primary !text-lg md:!text-xl !px-10 md:!px-12 !py-5 md:!py-6 shadow-xl"
+              <button
+                type="button"
+                onClick={() => {
+                  const onHome = window.location.pathname === "/";
+                  if (onHome) smoothScrollTo("get-involved-inline");
+                  else window.location.href = "/#get-involved-inline";
+                }}
+                className="rounded-full bg-primary px-8 py-5 text-base md:text-lg font-semibold uppercase tracking-[0.06em] text-primary-foreground shadow-[0_14px_34px_rgba(0,0,0,0.28)] transition-transform hover:scale-[1.04]"
               >
                 {t.hero.cta}
+              </button>
+              <a
+                href="/wall"
+                className="rounded-full border-2 border-warm-cream/50 px-8 py-5 text-base md:text-lg font-semibold text-warm-cream transition-colors hover:border-warm-cream hover:bg-warm-cream/10"
+              >
+                {t.hero.ctaSeeInAction}
+              </a>
+              <a
+                href="/donate"
+                className="border-b-2 border-transparent text-base md:text-lg font-semibold text-warm-gold transition-colors hover:border-warm-gold"
+              >
+                {t.navbar.donateNow}
               </a>
             </motion.div>
           </div>
@@ -143,9 +161,9 @@ const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0, duration: 0.8 }}
-            className="lg:col-span-5 w-full"
+            className="lg:col-span-6 w-full"
           >
-            <TopActsStack />
+            <HeroVideo />
           </motion.div>
         </div>
       </div>

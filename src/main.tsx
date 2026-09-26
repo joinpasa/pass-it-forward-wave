@@ -1,12 +1,9 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
-import "./index.css";
+import "@shared/styles/index.css";
 
 const markAppReady = () => {
   document.documentElement.classList.add("app-ready");
-  window.setTimeout(() => {
-    document.getElementById("ppl-splash")?.remove();
-  }, 400);
 };
 
 createRoot(document.getElementById("root")!).render(<App />);

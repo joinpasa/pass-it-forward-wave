@@ -1,19 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Heart, Loader2 } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "@shared/components/ui/tabs";
+import { Dialog, DialogContent } from "@shared/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+} from "@shared/components/ui/select";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useAuth } from "@shared/contexts/AuthContext";
+import { supabase } from "@shared/integrations/supabase/client";
+import { supabasePublic } from "@shared/integrations/supabase/publicClient";
 import { toast } from "sonner";
-import { pickCardGradient } from "@/lib/cardGradients";
+import { pickCardGradient } from "@shared/lib/cardGradients";
 import WallCard, { WallMode } from "./WallCard";
 import WallDialogBody from "./WallDialogBody";
 
@@ -21,7 +22,7 @@ import {
   parseYouTubeId,
   getYouTubeThumbnail,
   getYouTubeEmbedUrl,
-} from "@/lib/youtube";
+} from "@shared/lib/youtube";
 
 type TabValue = "all" | WallMode;
 type SortValue = "liked" | "recent";
@@ -72,15 +73,23 @@ export default function WallOfKindness() {
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
+  // Bumped every time tab/sort/user changes so an in-flight loadMore() from
+  // the *previous* selection (its while-loop for "liked" sort especially
+  // can span several awaited round-trips) can tell it's stale once it
+  // resolves, instead of appending wrong-mode results into the now-reset
+  // items and mutating the refs the new selection is also using.
+  const genRef = useRef(0);
+
   // Reset state whenever tab or sort changes
   useEffect(() => {
+    genRef.current += 1;
     setItems([]);
     setHasMore(true);
     recentOffsetRef.current = 0;
     likedBufferRef.current = [];
     likedFetchedOffsetRef.current = 0;
     likedDoneRef.current = false;
-    loadMore(true);
+    loadMore(true, genRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, sort, user]);
 
@@ -94,11 +103,14 @@ export default function WallOfKindness() {
     let counts: Record<string, number> = {};
     let myReactions = new Set<string>();
     if (ids.length) {
-      const { data: rx } = await supabase.rpc("reaction_counts", { _act_ids: ids });
+      // Public aggregate, same anon-visible data regardless of who's asking —
+      // use the session-free client, same as the base acts query below.
+      const { data: rx } = await supabasePublic.rpc("reaction_counts", { _act_ids: ids });
       (rx ?? []).forEach((r: { act_id: string; count: number }) => {
         counts[r.act_id] = Number(r.count) || 0;
       });
       if (user) {
+        // Needs the real session — this one is genuinely user-specific.
         const { data: mine } = await supabase.rpc("my_reactions", { _act_ids: ids });
         (mine ?? []).forEach((r: { act_id: string }) => myReactions.add(r.act_id));
       }
@@ -110,7 +122,7 @@ export default function WallOfKindness() {
     }));
   }
 
-  async function loadMore(initial = false) {
+  async function loadMore(initial = false, gen = genRef.current) {
     if (initial) {
       setLoading(true);
     } else {
@@ -121,7 +133,7 @@ export default function WallOfKindness() {
       if (sort === "recent") {
         const from = recentOffsetRef.current;
         const to = from + PAGE_SIZE - 1;
-        let q = supabase
+        let q = supabasePublic
           .from("acts_of_kindness")
           .select("id, description, first_name, photo_paths, video_url, created_at, mode, language")
           .eq("status", "published")
@@ -132,7 +144,9 @@ export default function WallOfKindness() {
           .order("created_at", { ascending: false })
           .range(from, to);
         if (error) throw error;
+        if (gen !== genRef.current) return; // stale — tab/sort/user changed while this was in flight
         const merged = await attachCounts((data as ActRow[]) ?? []);
+        if (gen !== genRef.current) return;
         recentOffsetRef.current += merged.length;
         setItems((prev) => dedupe([...prev, ...merged]));
         if (!data || data.length < PAGE_SIZE) setHasMore(false);
@@ -141,7 +155,7 @@ export default function WallOfKindness() {
         while (likedBufferRef.current.length < PAGE_SIZE && !likedDoneRef.current) {
           const from = likedFetchedOffsetRef.current;
           const to = from + LIKED_CANDIDATE_BATCH - 1;
-          let q = supabase
+          let q = supabasePublic
             .from("acts_of_kindness")
             .select("id, description, first_name, photo_paths, video_url, created_at, mode, language")
             .eq("status", "published")
@@ -152,10 +166,12 @@ export default function WallOfKindness() {
             .order("created_at", { ascending: false })
             .range(from, to);
           if (error) throw error;
+          if (gen !== genRef.current) return; // stale — abandon before touching the new selection's refs
           const rows = (data as ActRow[]) ?? [];
+          const merged = await attachCounts(rows);
+          if (gen !== genRef.current) return;
           likedFetchedOffsetRef.current += rows.length;
           if (rows.length < LIKED_CANDIDATE_BATCH) likedDoneRef.current = true;
-          const merged = await attachCounts(rows);
           likedBufferRef.current = [...likedBufferRef.current, ...merged];
         }
         // Sort full buffer by hearts desc, then recent desc
@@ -171,8 +187,10 @@ export default function WallOfKindness() {
     } catch (e) {
       console.error(e);
     } finally {
-      setLoading(false);
-      setLoadingMore(false);
+      if (gen === genRef.current) {
+        setLoading(false);
+        setLoadingMore(false);
+      }
     }
   }
 

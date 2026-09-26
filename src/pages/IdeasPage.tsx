@@ -4,7 +4,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
 import KindnessIdeas from "@/components/inspiration/KindnessIdeas";
 import VolunteerDirectory from "@/components/inspiration/VolunteerDirectory";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 
 function Hero() {
   const { t } = useLanguage();

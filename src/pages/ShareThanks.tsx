@@ -1,23 +1,28 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
-import { Award, Download, Flame, Share2, Heart, Sparkles } from "lucide-react";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Award, Building2, Flame, Heart, Sparkles, Users } from "lucide-react";
 import { toPng } from "html-to-image";
 import { toast } from "sonner";
+import schoolImage from "@/assets/getinvolved-build.jpg";
+import ambassadorImage from "@/assets/community-5.jpg";
 
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useAuth } from "@shared/contexts/AuthContext";
+import { useUI } from "@shared/contexts/UIContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ShareGraphic from "@/components/share/ShareGraphic";
-import ShareDialog from "@/components/share/ShareDialog";
-import ThanksSummary from "@/components/share/ThanksSummary";
-import CheckInboxCard from "@/components/share/CheckInboxCard";
-import CommitFlow from "@/components/commit/CommitFlow";
-import PledgeCounter from "@/components/commit/PledgeCounter";
-import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import ShareGraphic from "@shared/components/share/ShareGraphic";
+import KindnessCard from "@shared/components/share/KindnessCard";
+import ThanksSummary from "@shared/components/share/ThanksSummary";
+import CheckInboxCard from "@shared/components/share/CheckInboxCard";
+import { useShareActions } from "@shared/components/share/useShareActions";
+import { buildShareOptions } from "@shared/components/share/buildShareOptions";
+import ShareOptionsGrid from "@shared/components/share/ShareOptionsGrid";
+import { Button } from "@shared/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@shared/components/ui/dialog";
+import { supabase } from "@shared/integrations/supabase/client";
 import { useReferralCode } from "@/hooks/useReferralCode";
-import { siteOrigin, withReferral } from "@/lib/referral";
+import { siteOrigin, withReferral } from "@shared/lib/referral";
 
 interface Act {
   id: string;
@@ -36,15 +41,17 @@ function Inner() {
   const { id } = useParams<{ id: string }>();
   const { t, lang } = useLanguage();
   const { user } = useAuth();
+  const { openShareModal } = useUI();
+  const navigate = useNavigate();
   const referralCode = useReferralCode(user?.id);
   const [searchParams, setSearchParams] = useSearchParams();
   const [act, setAct] = useState<Act | null>(null);
   const [loading, setLoading] = useState(true);
   const graphicRef = useRef<HTMLDivElement>(null);
-  const [pledgeRefresh, setPledgeRefresh] = useState(0);
   const [postShare, setPostShare] = useState<{ kind: "check_inbox" | "prefill"; email: string } | null>(null);
   const [rewards, setRewards] = useState<{ unlocked_badges?: string[]; type_tag?: string } | null>(null);
-  const [shareOpen, setShareOpen] = useState(false);
+  const [showClaim, setShowClaim] = useState(false);
+  const [readMoreOpen, setReadMoreOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -60,31 +67,54 @@ function Inner() {
         .select("id, description, first_name, mode, photo_paths")
         .eq("id", id)
         .maybeSingle();
+
+      // A just-submitted act is often still pending review, and the public
+      // read policy only exposes published acts - so this fetch can come
+      // back empty right after submitting, even though the act was saved
+      // correctly. Fall back to what was actually submitted in this session.
+      if (!data) {
+        try {
+          const raw = sessionStorage.getItem(`share_content_${id}`);
+          if (raw) {
+            const stashed = JSON.parse(raw);
+            setAct({ id, ...stashed });
+            setLoading(false);
+            return;
+          }
+        } catch { /* noop */ }
+      }
       setAct(data);
       setLoading(false);
     })();
   }, [id]);
 
-  // After magic-link sign-in lands here (?claim=1), attach prior anonymous acts.
+  // After magic-link sign-in lands here (?claim=1), attach prior anonymous
+  // acts, then continue on to the dashboard — that's the actual destination
+  // "claim your profile" was for; staying on this static thank-you page
+  // left people thinking the link had failed.
   useEffect(() => {
     if (!user) return;
     if (searchParams.get("claim") !== "1") return;
     (async () => {
       try {
-        const { data } = await supabase.rpc("claim_my_acts");
+        const { data, error } = await supabase.rpc("claim_my_acts");
+        if (error) throw error;
         if (typeof data === "number" && data > 0) {
           toast.success(t.share.claimedToast);
         }
       } catch (e) {
+        // supabase-js resolves with { error } rather than rejecting on a
+        // DB-level failure — without checking it explicitly, a genuine
+        // claim failure looked identical to "nothing to claim" and the
+        // person was silently sent on with their act never attached.
         console.error("claim_my_acts failed", e);
+        toast.error("Couldn't link that act to your account — it's still saved, just not attached yet.");
       } finally {
-        // Drop the query param so refresh doesn't re-run.
-        searchParams.delete("claim");
-        setSearchParams(searchParams, { replace: true });
         if (id) sessionStorage.removeItem(`share_post_${id}`);
+        navigate("/account", { replace: true });
       }
     })();
-  }, [user, searchParams, setSearchParams, t, id]);
+  }, [user, searchParams, t, id, navigate]);
 
   async function generatePng(): Promise<Blob | null> {
     if (!graphicRef.current) return null;
@@ -97,51 +127,37 @@ function Inner() {
     return await res.blob();
   }
 
-  async function handleDownload() {
-    const blob = await generatePng();
-    if (!blob) return;
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "pasalo-palante.png";
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+  const shareUrl = id ? withReferral(`${siteOrigin()}/wave/${id}`, referralCode) : "";
+  const shareText = `${act?.description || t.share.defaultGraphicLine} #PasaloPalante`;
 
-  function handleShare() {
-    setShareOpen(true);
-  }
+  const shareActions = useShareActions({
+    getImageBlob: generatePng,
+    shareUrl,
+    shareText,
+    labels: {
+      copied: t.share.copied,
+      instagramHint: t.share.shareDialog.instagramHint,
+      shareFailed: t.share.shareDialog.shareFailed,
+    },
+  });
+  const shareOptions = buildShareOptions(shareActions, {
+    nativeShare: t.share.shareDialog.nativeShare,
+    facebook: t.share.shareDialog.facebook,
+    twitter: t.share.shareDialog.twitter,
+    whatsapp: t.share.shareDialog.whatsapp,
+    linkedin: t.share.shareDialog.linkedin,
+    instagram: t.share.shareDialog.instagram,
+    copyLink: t.share.shareDialog.copyLink,
+    download: t.share.shareDialog.download,
+  });
 
-  const shareColumn = (
-    <div className="text-center">
-      <div className="mb-6 mx-auto max-w-sm">
-        {loading ? (
-          <div className="aspect-square rounded-2xl bg-card animate-pulse" />
-        ) : (
-          <ShareGraphic
-            ref={graphicRef}
-            description={act?.description}
-            firstName={act?.first_name}
-            mode={act?.mode}
-            seed={act?.id}
-            photoUrl={
-              act?.photo_paths && act.photo_paths.length > 0
-                ? publicPhotoUrl(act.photo_paths[0])
-                : null
-            }
-          />
-        )}
-      </div>
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <Button onClick={handleShare} className="!py-5 !px-6">
-          <Share2 size={18} /> {t.share.shareButton}
-        </Button>
-        <Button onClick={handleDownload} variant="outline" className="!py-5 !px-6">
-          <Download size={18} /> {t.share.downloadButton}
-        </Button>
-      </div>
-    </div>
-  );
+  function handleClaimProfile() {
+    if (postShare?.kind === "check_inbox") {
+      setShowClaim(true);
+    } else {
+      navigate("/auth?tab=signup");
+    }
+  }
 
   const unlocked = rewards?.unlocked_badges || [];
   const rewardMessages = unlocked.map((badgeId) => {
@@ -152,106 +168,183 @@ function Inner() {
     return { icon: <Sparkles size={22} className="text-primary" />, text: lang === "es" ? "Gracias por sumar a la ola — desbloqueaste una nueva insignia." : "Thanks for adding to the wave — you unlocked a new badge." };
   });
 
-  const focusColumn = user ? (
-    <div className="space-y-5">
-      {rewardMessages.length > 0 && (
-        <div className="bg-card border border-primary/20 rounded-2xl p-5 shadow-sm space-y-3">
-          {rewardMessages.map((item, i) => (
-            <div key={i} className="flex items-center gap-3 text-foreground">
-              <div className="w-10 h-10 rounded-full bg-primary/10 grid place-items-center shrink-0">{item.icon}</div>
-              <p className="font-medium leading-snug">{item.text}</p>
-            </div>
-          ))}
-        </div>
-      )}
-      <ThanksSummary userId={user.id} email={user.email || ""} />
-    </div>
-  ) : postShare?.kind === "check_inbox" && id ? (
-    <CheckInboxCard email={postShare.email} actId={id} />
-  ) : (
-    <div>
-      <p className="text-xs uppercase tracking-widest text-primary mb-2">
-        {t.share.takeItFurtherEyebrow}
-      </p>
-      <h2 className="font-display text-3xl md:text-4xl text-foreground mb-4">
-        {t.share.takeItFurtherHeading}
-      </h2>
-      <div className="space-y-3 mb-8 text-foreground/80 text-lg md:text-xl leading-snug">
-        {(t.share.takeItFurtherBullets as readonly string[]).map((b, i) => (
-          <p key={i}>{b}</p>
-        ))}
-      </div>
-      <CommitFlow
-        onSuccess={() => setPledgeRefresh((k) => k + 1)}
-        prefilledEmail={postShare?.kind === "prefill" ? postShare.email : undefined}
-        onClearPrefilledEmail={() => {
-          if (id) sessionStorage.removeItem(`share_post_${id}`);
-          setPostShare(null);
-        }}
-      />
-    </div>
-  );
+  const photoUrl =
+    act?.photo_paths && act.photo_paths.length > 0 ? publicPhotoUrl(act.photo_paths[0]) : null;
 
   return (
     <main className="pt-28 pb-24 section-padding bg-warm-cream min-h-screen">
-      <ShareDialog
-        open={shareOpen}
-        onOpenChange={setShareOpen}
-        getImageBlob={generatePng}
-        shareUrl={id ? withReferral(`${siteOrigin()}/wave/${id}`, referralCode) : ""}
-        shareText={`${act?.description || t.share.defaultGraphicLine} #PasaloPalante`}
-        title={t.share.shareDialog.title}
-        description={t.share.shareDialog.description}
-        helperText={t.share.shareDialog.helper}
-        labels={{
-          nativeShare: t.share.shareDialog.nativeShare,
-          facebook: t.share.shareDialog.facebook,
-          twitter: t.share.shareDialog.twitter,
-          whatsapp: t.share.shareDialog.whatsapp,
-          linkedin: t.share.shareDialog.linkedin,
-          instagram: t.share.shareDialog.instagram,
-          copyLink: t.share.shareDialog.copyLink,
-          download: t.share.shareDialog.download,
-          copied: t.share.copied,
-          instagramHint: t.share.shareDialog.instagramHint,
-          shareFailed: t.share.shareDialog.shareFailed,
-        }}
-      />
-      <div className="max-w-6xl mx-auto">
+      <Dialog open={readMoreOpen} onOpenChange={setReadMoreOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{t.share.readFullStory}</DialogTitle>
+          </DialogHeader>
+          <p className="whitespace-pre-wrap text-foreground/90 leading-relaxed">{act?.description}</p>
+        </DialogContent>
+      </Dialog>
+
+      {/* Off-screen graphic — powers the Download button only, never shown. */}
+      <div
+        aria-hidden
+        style={{ position: "fixed", left: -10000, top: 0, width: 540, pointerEvents: "none", opacity: 0 }}
+      >
+        <ShareGraphic
+          ref={graphicRef}
+          description={act?.description}
+          firstName={act?.first_name}
+          mode={act?.mode}
+          seed={act?.id}
+          photoUrl={photoUrl}
+        />
+      </div>
+
+      <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-10 md:mb-12">
           <Heart className="mx-auto mb-5 text-primary fill-current" size={32} />
-          {/* Mobile heading */}
-          <h1 className="headline-xl text-foreground md:hidden">
-            {t.share.thanksHeadingShort}
-          </h1>
-          {/* Desktop heading — single line */}
-          <h1 className="hidden md:block headline-xl text-foreground lg:whitespace-nowrap">
-            {t.share.thanksHeadingDesktop}
-          </h1>
+          <h1 className="headline-xl text-foreground">{t.share.thanksHeadingDesktop}</h1>
         </div>
 
-        {/* Mobile-only tiny share subhead + share button (image hidden) */}
-        <div className="md:hidden text-center mb-8">
-          <p className="text-sm text-muted-foreground mb-4">{t.share.shareSubheadSmall}</p>
-          <Button onClick={handleShare} className="!py-5 !px-6">
-            <Share2 size={18} /> {t.share.shareButton}
-          </Button>
+        {/* Stage 1 */}
+        <p className="text-xs uppercase tracking-widest text-primary font-semibold mb-2">
+          {t.share.thanksStageOneEyebrow}
+        </p>
+        <h2 className="headline-lg text-foreground mb-8">{t.share.thanksStageOneHeading}</h2>
+
+        {user && (
+          <div className="mb-8 space-y-3">
+            {rewardMessages.length > 0 && (
+              <div className="bg-card border border-primary/20 rounded-2xl p-5 shadow-sm space-y-3">
+                {rewardMessages.map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 text-foreground">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 grid place-items-center shrink-0">{item.icon}</div>
+                    <p className="font-medium leading-snug">{item.text}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            <ThanksSummary userId={user.id} email={user.email || ""} />
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-start mb-8">
+          {/* Step 1: share card */}
+          <div>
+            <p className="text-sm font-semibold text-foreground/70 mb-4">{t.share.thanksStepOneEyebrow}</p>
+            <div className="max-w-sm">
+              {loading ? (
+                <div className="aspect-square rounded-2xl bg-card animate-pulse" />
+              ) : (
+                <KindnessCard
+                  variant="minimal"
+                  showModeEyebrow
+                  description={act?.description}
+                  firstName={act?.first_name}
+                  mode={act?.mode}
+                  photoUrl={photoUrl}
+                  seed={act?.id}
+                  onReadMore={() => setReadMoreOpen(true)}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Step 2: pass it forward */}
+          <div>
+            <p className="text-sm font-semibold text-foreground/70 mb-2">{t.share.thanksStepTwoEyebrow}</p>
+            <p className="text-foreground/80 mb-5">{t.share.thanksStepTwoBody}</p>
+            <ShareOptionsGrid options={shareOptions} busy={shareActions.busy} />
+          </div>
         </div>
 
-        {/* Two-column desktop layout; focus first on mobile */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-start">
-          <div>{focusColumn}</div>
-          <div className="hidden md:block">{shareColumn}</div>
+        {/* Share another / claim profile row */}
+        <div className="bg-background rounded-2xl border border-border p-6 mb-16">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <Button onClick={() => openShareModal()}>{t.share.shareAnother}</Button>
+            {!showClaim && (
+              user ? (
+                <Link to="/account" className="text-sm font-bold text-warm-sky hover:underline">
+                  {t.share.viewProfileCta}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleClaimProfile}
+                  className="text-sm font-bold text-warm-sky hover:underline"
+                >
+                  {t.share.claimProfilePrompt} {t.share.claimProfileCta}
+                </button>
+              )
+            )}
+          </div>
+          {showClaim && postShare && id && (
+            <div className="mt-5">
+              <CheckInboxCard email={postShare.email} actId={id} />
+            </div>
+          )}
         </div>
 
-        <div className="text-center mt-12">
-          <Link
-            to="/share"
-            className="inline-block text-sm font-bold text-primary hover:underline"
-          >
-            {t.share.shareAnother}
-          </Link>
+        {/* Stage 2 */}
+        <div className="flex items-center gap-4 mb-3">
+          <span className="inline-flex items-center rounded-full bg-cyan-900 px-4 py-1.5 text-[11.5px] font-bold uppercase tracking-[0.18em] text-warm-cream">
+            {t.share.thanksStageTwoEyebrow}
+          </span>
+          <span className="h-px flex-1 bg-border" />
+        </div>
+        <h2 className="headline-lg text-foreground mb-3">{t.share.thanksStageTwoHeading}</h2>
+        <p className="text-foreground/70 text-lg md:text-xl leading-relaxed max-w-[62ch] mb-8 md:mb-12">
+          {t.share.thanksStageTwoBody}
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8">
+          {/* Bring To School or Workplace */}
+          <div className="flex flex-col overflow-hidden rounded-[22px] bg-card">
+            <img
+              src={schoolImage}
+              alt=""
+              className="h-[180px] md:h-[230px] w-full object-cover object-top"
+            />
+            <div className="flex flex-1 flex-col p-7 md:p-9">
+              <div className="mb-[18px] grid h-12 w-12 place-items-center rounded-xl bg-primary/10">
+                <Building2 size={22} className="text-primary" strokeWidth={1.9} />
+              </div>
+              <h3 className="font-display text-2xl md:text-3xl leading-tight text-foreground mb-2.5">
+                {t.share.thanksSchoolTitle}
+              </h3>
+              <p className="flex-1 text-base md:text-[16.5px] leading-relaxed text-muted-foreground mb-7">
+                {t.share.thanksSchoolBody}
+              </p>
+              <Button asChild className="self-start rounded-full px-7 py-6 text-[15.5px]">
+                <Link to="/contact">{t.share.thanksSchoolCta}</Link>
+              </Button>
+            </div>
+          </div>
+
+          {/* Become an Ambassador */}
+          <div className="flex flex-col overflow-hidden rounded-[22px] bg-card">
+            <img
+              src={ambassadorImage}
+              alt=""
+              className="h-[180px] md:h-[230px] w-full object-cover object-top"
+            />
+            <div className="flex flex-1 flex-col p-7 md:p-9">
+              <div className="mb-[18px] grid h-12 w-12 place-items-center rounded-xl bg-cyan-900/10">
+                <Users size={22} className="text-cyan-900" strokeWidth={1.9} />
+              </div>
+              <h3 className="font-display text-2xl md:text-3xl leading-tight text-foreground mb-2.5">
+                {t.share.thanksAmbassadorTitle}
+              </h3>
+              <p className="flex-1 text-base md:text-[16.5px] leading-relaxed text-muted-foreground mb-7">
+                {t.share.thanksAmbassadorBody}
+              </p>
+              <Button
+                asChild
+                variant="outline"
+                className="self-start rounded-full border-2 border-cyan-900 px-7 py-6 text-[15.5px] text-cyan-900 hover:bg-cyan-900/5"
+              >
+                <Link to="/commit">{t.share.thanksAmbassadorCta}</Link>
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </main>

@@ -1,0 +1,23 @@
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react-swc";
+import path from "path";
+
+export default defineConfig({
+  define: {
+    __CANONICAL_ORIGIN__: JSON.stringify("https://pasalopalante.com"),
+    __APP_BASE_URL__: JSON.stringify("https://app.pasalopalante.com/"),
+  },
+  plugins: [react()],
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: ["./src/test/setup.ts"],
+    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+      "@shared": path.resolve(__dirname, "./src"),
+    },
+  },
+});

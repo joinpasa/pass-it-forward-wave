@@ -1,0 +1,141 @@
+import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
+
+/**
+ * The single source of design tokens (colors, radius, keyframes) shared by
+ * the website and the app, so both Tailwind builds stay pixel-identical.
+ * Each app's own tailwind.config.ts applies this as a preset.
+ */
+const preset: Pick<Config, "darkMode" | "theme" | "plugins"> = {
+  darkMode: ["class"],
+  theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
+    extend: {
+      colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        warm: {
+          cream: "hsl(var(--warm-cream))",
+          sand: "hsl(var(--warm-sand))",
+          terracotta: "hsl(var(--warm-terracotta))",
+          sage: "hsl(var(--warm-sage))",
+          gold: "hsl(var(--warm-gold))",
+          earth: "hsl(var(--warm-earth))",
+          blush: "hsl(var(--warm-blush))",
+          sky: "hsl(var(--warm-sky))",
+        },
+        // Partial override of Tailwind's built-in cyan scale — only the
+        // shades actually used site-wide as the brand's dark navy (Hero,
+        // Footer, ScienceProof section backgrounds, HowItWorks/ShareThanks
+        // icon accents, LanguageSwitcher dropdown). Not a CSS custom
+        // property like the tokens above because these are literal
+        // `bg-cyan-900`/`text-cyan-100`/etc. utility classes throughout the
+        // components — overriding the shade values here keeps the fix
+        // centralized in the design tokens without touching every
+        // component's className strings. Shades 50/200-800/etc. are left as
+        // Tailwind defaults since nothing in the codebase references them.
+        cyan: {
+          100: "#cedef3",
+          900: "#0d2249",
+          950: "#06132d",
+        },
+        app: {
+          coral: "hsl(var(--app-coral))",
+          "coral-tint": "hsl(var(--app-coral-tint))",
+          ink: "hsl(var(--app-ink))",
+          teal: "hsl(var(--app-teal))",
+          "teal-tint": "hsl(var(--app-teal-tint))",
+          gold: "hsl(var(--app-gold))",
+          "gold-tint": "hsl(var(--app-gold-tint))",
+          surface: "hsl(var(--app-surface))",
+          canvas: "hsl(var(--app-canvas))",
+          sky: "hsl(var(--app-sky))",
+          magenta: "hsl(var(--app-magenta))",
+          water: "hsl(var(--app-water))",
+          land: "hsl(var(--app-land))",
+          hush: "hsl(var(--app-hush))",
+        },
+
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar-background))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          ring: "hsl(var(--sidebar-ring))",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "fade-up": {
+          from: { opacity: "0", transform: "translateY(30px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "count-up": {
+          from: { opacity: "0", transform: "scale(0.8)" },
+          to: { opacity: "1", transform: "scale(1)" },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-up": "fade-up 0.8s ease-out forwards",
+        "count-up": "count-up 0.5s ease-out forwards",
+      },
+    },
+  },
+  plugins: [tailwindcssAnimate],
+};
+
+export default preset;

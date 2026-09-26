@@ -2,13 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 
-import { useLanguage } from "@/contexts/LanguageContext";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { supabase } from "@shared/integrations/supabase/client";
+import { Button } from "@shared/components/ui/button";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@shared/components/ui/radio-group";
+import { Popover, PopoverContent, PopoverTrigger } from "@shared/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -16,9 +16,10 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import { COUNTRIES } from "@/data/countries";
-import { cn } from "@/lib/utils";
+} from "@shared/components/ui/command";
+import { COUNTRIES } from "@shared/data/countries";
+import { cn } from "@shared/lib/utils";
+import { DISPLAY_NAME_RE, isReservedDisplayName } from "@shared/lib/displayName";
 
 type Mode = "initial" | "full" | "custom";
 
@@ -33,14 +34,6 @@ interface Props {
     display_name?: string | null;
   } | null;
   onSaved?: () => void;
-}
-
-const NAME_RE = /^[\p{L}\p{N} .\-'_]{2,30}$/u;
-const RESERVED = ["pasalo", "pásalo", "palante", "pa'lante", "admin", "moderator", "support", "official"];
-
-function isReserved(v: string) {
-  const low = v.toLowerCase();
-  return RESERVED.some((r) => low.includes(r));
 }
 
 export default function ProfileSettingsCard({ userId, profile, onSaved }: Props) {
@@ -64,7 +57,7 @@ export default function ProfileSettingsCard({ userId, profile, onSaved }: Props)
   }, [profile]);
 
   const trimmedCustom = custom.trim();
-  const customValid = NAME_RE.test(trimmedCustom) && !isReserved(trimmedCustom);
+  const customValid = DISPLAY_NAME_RE.test(trimmedCustom) && !isReservedDisplayName(trimmedCustom);
 
   // Debounced availability check
   useEffect(() => {
@@ -216,7 +209,7 @@ export default function ProfileSettingsCard({ userId, profile, onSaved }: Props)
               aria-describedby="pn-custom-status"
             />
             <p id="pn-custom-status" className="text-xs flex items-center gap-1.5">
-              {trimmedCustom && isReserved(trimmedCustom) ? (
+              {trimmedCustom && isReservedDisplayName(trimmedCustom) ? (
                 <span className="text-destructive">{t.account.profileReserved}</span>
               ) : trimmedCustom && !customValid ? (
                 <span className="text-destructive">{t.account.profileInvalid}</span>

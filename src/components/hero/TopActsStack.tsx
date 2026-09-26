@@ -1,18 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { Heart } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@shared/integrations/supabase/client";
+import { supabasePublic } from "@shared/integrations/supabase/publicClient";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useActTranslation } from "@/hooks/useActTranslation";
-import { pickCardGradient } from "@/lib/cardGradients";
-import PalanteArrow from "@/components/icons/PalanteArrow";
-import { splitKindnessTag } from "@/lib/splitKindnessTag";
+import { pickCardGradient } from "@shared/lib/cardGradients";
+import PalanteArrow from "@shared/components/icons/PalanteArrow";
+import { splitKindnessTag } from "@shared/lib/splitKindnessTag";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@shared/components/ui/dialog";
 
 const PUBLIC_BUCKET = "kindness-photos";
 const CANDIDATE_LIMIT = 200;
@@ -107,7 +108,7 @@ export default function TopActsStack() {
         const ids = rows.map((r) => r.id);
         let counts: Record<string, number> = {};
         if (ids.length) {
-          const { data: rx } = await supabase.rpc("reaction_counts", {
+          const { data: rx } = await supabasePublic.rpc("reaction_counts", {
             _act_ids: ids,
           });
           (rx ?? []).forEach((r: { act_id: string; count: number }) => {

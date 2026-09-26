@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { cn } from "@/lib/utils";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { cn } from "@shared/lib/utils";
 
 interface SubNavItem {
   id: string;

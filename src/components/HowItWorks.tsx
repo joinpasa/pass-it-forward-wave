@@ -1,7 +1,10 @@
 import { motion, useInView, useAnimation } from "framer-motion";
 import { useRef, useCallback, useEffect } from "react";
-import { Heart, ArrowRight, Sparkles } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { ArrowUpRight, Check, Heart, ArrowRight, Smartphone, Sparkles } from "lucide-react";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import QuickPledgeForm from "@/components/commit/QuickPledgeForm";
+import PledgeCounter from "@/components/commit/PledgeCounter";
+import { triggerAppInstall } from "@shared/lib/installTrigger";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -106,6 +109,8 @@ const HowItWorks = () => {
     { title: t.howItWorks.step3Title, body: t.howItWorks.step3Body },
   ];
 
+  const checks = [t.howItWorks.inlineFormCheck1, t.howItWorks.inlineFormCheck2, t.howItWorks.inlineFormCheck3];
+
   return (
     <section id="how-it-works" ref={ref} className="bg-warm-sand section-padding section-spacing">
       <div className="max-w-6xl mx-auto">
@@ -121,14 +126,75 @@ const HowItWorks = () => {
           {t.howItWorks.body}
         </motion.p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
           {steps.map((step, i) => (
             <StepCard key={i} title={step.title} body={step.body} i={i} inView={inView} />
           ))}
         </div>
 
-        <motion.div custom={6} variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} className="text-center mt-12">
-          <a href="/share" className="btn-primary">{t.howItWorks.cta}</a>
+        {/* App strip — deliberately not a 4th step */}
+        <motion.div
+          custom={6}
+          variants={fadeUp}
+          initial="hidden"
+          animate={inView ? "visible" : "hidden"}
+          className="flex items-center justify-between flex-wrap gap-7 bg-warm-cream border border-border rounded-2xl px-8 py-6 mb-10"
+          style={{ borderLeft: "4px solid #0d2249" }}
+        >
+          <div className="flex items-center gap-5">
+            <div className="shrink-0 w-[46px] h-[46px] rounded-xl bg-cyan-900/10 flex items-center justify-center">
+              <Smartphone size={22} className="text-cyan-900" />
+            </div>
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-900 mb-1">
+                {t.howItWorks.appStripEyebrow}
+              </p>
+              <h3 className="headline-md !text-2xl text-foreground mb-1">{t.howItWorks.appStripHeading}</h3>
+              <p className="text-sm text-muted-foreground">{t.howItWorks.appStripBody}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => triggerAppInstall()}
+            className="inline-flex items-center gap-2 rounded-full bg-cyan-900 px-6 py-3.5 text-sm font-semibold text-warm-cream hover:bg-cyan-900/90 transition-colors shrink-0"
+          >
+            {t.howItWorks.appStripCta}
+            <ArrowUpRight size={17} />
+          </button>
+        </motion.div>
+
+        {/* Inline pledge form — the primary CTA's scroll target */}
+        <motion.div
+          id="get-involved-inline"
+          custom={7}
+          variants={fadeUp}
+          initial="hidden"
+          animate={inView ? "visible" : "hidden"}
+          className="grid grid-cols-1 lg:grid-cols-2 rounded-3xl overflow-hidden shadow-[0_24px_60px_rgba(0,0,0,0.08)]"
+        >
+          <div className="bg-[#0E234B] px-6 py-10 md:px-11 md:py-14 flex flex-col justify-center">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-warm-sky mb-3">
+              {t.howItWorks.inlineFormEyebrow}
+            </p>
+            <h3 className="headline-lg !text-3xl md:!text-4xl text-warm-cream mb-4">
+              {t.howItWorks.inlineFormHeading}
+            </h3>
+            <p className="text-warm-cream/80 mb-7 leading-relaxed">{t.howItWorks.inlineFormBody}</p>
+            <div className="space-y-3 mb-8">
+              {checks.map((c) => (
+                <div key={c} className="flex items-start gap-2.5">
+                  <Check size={18} className="text-warm-sky shrink-0 mt-0.5" />
+                  <span className="text-[15.5px] text-warm-cream/90">{c}</span>
+                </div>
+              ))}
+            </div>
+            <div className="pt-6 border-t border-warm-cream/15">
+              <PledgeCounter className="!justify-start !gap-10 [&_.text-primary]:!text-warm-gold [&_.text-muted-foreground]:!text-warm-cream/70" />
+            </div>
+          </div>
+          <div className="bg-warm-cream px-6 py-8 md:px-12 md:py-13">
+            <QuickPledgeForm />
+          </div>
         </motion.div>
       </div>
     </section>

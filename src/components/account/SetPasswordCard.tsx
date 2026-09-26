@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { supabase } from "@shared/integrations/supabase/client";
+import { useAuth } from "@shared/contexts/AuthContext";
+import { Button } from "@shared/components/ui/button";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
 import { toast } from "sonner";
-import { KeyRound } from "lucide-react";
+import { Eye, EyeOff, KeyRound } from "lucide-react";
+import { PASSWORD_HINT, validatePassword } from "@shared/lib/passwordStrength";
+import { syncGhlTag } from "@shared/lib/ghlSync";
 
 export default function SetPasswordCard() {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [pw, setPw] = useState("");
+  const [pwConfirm, setPwConfirm] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [busy, setBusy] = useState(false);
   const [hasPassword, setHasPassword] = useState(false);
 
@@ -22,14 +26,19 @@ export default function SetPasswordCard() {
         .select("has_password")
         .eq("user_id", user.id)
         .maybeSingle();
-      setHasPassword(!!(data as any)?.has_password);
+      setHasPassword(!!(data as { has_password?: boolean } | null)?.has_password);
     })();
   }, [user]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pw.length < 8) {
-      toast.error("Password must be at least 8 characters.");
+    const validationError = validatePassword(pw);
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+    if (pw !== pwConfirm) {
+      toast.error("Passwords don't match. Watch out for a password manager auto-filling a different one.");
       return;
     }
     setBusy(true);
@@ -41,7 +50,9 @@ export default function SetPasswordCard() {
     if (error) toast.error(error.message);
     else {
       toast.success(hasPassword ? "Password updated." : "Password set. You can now sign in with email + password.");
+      if (!hasPassword) syncGhlTag(user?.email, "password-set");
       setPw("");
+      setPwConfirm("");
       setOpen(false);
       setHasPassword(true);
     }
@@ -70,12 +81,50 @@ export default function SetPasswordCard() {
       {open && (
         <form onSubmit={submit} className="mt-5 space-y-3 max-w-sm">
           <div>
-            <Label htmlFor="new-pw">{hasPassword ? "New password" : "New password"}</Label>
-            <Input id="new-pw" type="password" minLength={8} value={pw} onChange={(e) => setPw(e.target.value)} required />
+            <Label htmlFor="new-pw">New password</Label>
+            <div className="relative">
+              <Input
+                id="new-pw"
+                type={showPw ? "text" : "password"}
+                autoComplete="new-password"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                minLength={8}
+                value={pw}
+                onChange={(e) => setPw(e.target.value)}
+                required
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw((v) => !v)}
+                aria-label={showPw ? "Hide password" : "Show password"}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/50 hover:text-foreground"
+              >
+                {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
           </div>
+          <div>
+            <Label htmlFor="new-pw-confirm">Confirm password</Label>
+            <Input
+              id="new-pw-confirm"
+              type={showPw ? "text" : "password"}
+              autoComplete="new-password"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              minLength={8}
+              value={pwConfirm}
+              onChange={(e) => setPwConfirm(e.target.value)}
+              required
+            />
+          </div>
+          <p className="text-xs text-foreground/50">{PASSWORD_HINT}</p>
           <div className="flex gap-2">
             <Button type="submit" disabled={busy}>{busy ? "…" : (hasPassword ? "Update password" : "Save password")}</Button>
-            <Button type="button" variant="ghost" onClick={() => { setOpen(false); setPw(""); }}>Cancel</Button>
+            <Button type="button" variant="ghost" onClick={() => { setOpen(false); setPw(""); setPwConfirm(""); }}>Cancel</Button>
           </div>
         </form>
       )}

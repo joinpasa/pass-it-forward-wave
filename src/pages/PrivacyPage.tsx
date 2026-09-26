@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 
 export default function PrivacyPage() {
   const { lang } = useLanguage();
@@ -12,7 +12,7 @@ export default function PrivacyPage() {
 
   const Section = ({ n, title, children }: { n: number; title: string; children: React.ReactNode }) => (
     <>
-      <h2 className="font-display text-2xl text-warm-earth mt-10">
+      <h2 className="font-display text-2xl text-foreground mt-10">
         {n}. {title}
       </h2>
       <div className="space-y-4">{children}</div>
@@ -37,7 +37,7 @@ export default function PrivacyPage() {
         <article className="max-w-3xl mx-auto">
           <header className="mb-10 text-center">
             <p className="eyebrow">Pásalo Pa'lante</p>
-            <h1 className="headline-xl text-warm-earth mt-3">
+            <h1 className="headline-xl text-foreground mt-3">
               {t("Privacy Policy & Legal Information", "Política de Privacidad e Información Legal")}
             </h1>
             <p className="text-sm text-foreground/60 mt-3">
@@ -53,10 +53,10 @@ export default function PrivacyPage() {
               </p>
               <p>
                 {t("Movement website:", "Sitio del movimiento:")}{" "}
-                <a href="https://pasalopalante.com" className="text-primary underline">pasalopalante.com</a>
+                <a href="https://pasalopalante.com" className="text-warm-sky underline">pasalopalante.com</a>
                 {" · "}
                 {t("Organization website:", "Sitio de la organización:")}{" "}
-                <a href="https://teamopr.org" target="_blank" rel="noopener noreferrer" className="text-primary underline">teamopr.org</a>
+                <a href="https://teamopr.org" target="_blank" rel="noopener noreferrer" className="text-warm-sky underline">teamopr.org</a>
               </p>
             </div>
           </header>
@@ -81,7 +81,7 @@ export default function PrivacyPage() {
                   "Juntos, Te Amo PR y Pásalo Pa'lante comparten un propósito común: inspirar a personas, instituciones, escuelas, empresas, comunidades y naciones a hacer la bondad visible, práctica y contagiosa."
                 )}
               </p>
-              <ul className="list-none pl-0 space-y-1 text-sm bg-warm-cream/60 border border-warm-earth/10 rounded-lg p-4">
+              <ul className="list-none pl-0 space-y-1 text-sm bg-warm-cream/60 border border-border rounded-lg p-4">
                 <li><strong>{t("Legal nonprofit organization:", "Organización legal sin fines de lucro:")}</strong> Te Amo PR</li>
                 <li><strong>{t("Sister initiative / movement platform:", "Iniciativa hermana / plataforma del movimiento:")}</strong> Pásalo Pa'lante</li>
                 <li><strong>{t("Primary organization website:", "Sitio principal de la organización:")}</strong> teamopr.org</li>
@@ -90,9 +90,9 @@ export default function PrivacyPage() {
                 <li><strong>{t("Mailing address:", "Dirección postal:")}</strong> 550 Av. de la Constitución #905, San Juan</li>
                 <li>
                   <strong>{t("Email:", "Correo:")}</strong>{" "}
-                  <a href="mailto:info@teamopr.org" className="text-primary underline">info@teamopr.org</a>
+                  <a href="mailto:info@teamopr.org" className="text-warm-sky underline">info@teamopr.org</a>
                   {" · "}
-                  <a href="mailto:hello@pasalopalante.com" className="text-primary underline">hello@pasalopalante.com</a>
+                  <a href="mailto:hello@pasalopalante.com" className="text-warm-sky underline">hello@pasalopalante.com</a>
                 </li>
               </ul>
             </Section>
@@ -300,11 +300,11 @@ export default function PrivacyPage() {
 
             <Section n={25} title={t("Contact Information", "Información de contacto")}>
               <p>{t("For privacy, legal, nonprofit, donation, partnership, media, or general inquiries, please contact:", "Para asuntos de privacidad, legales, sin fines de lucro, donaciones, alianzas, medios o consultas generales, contacta:")}</p>
-              <div className="bg-warm-cream/60 border border-warm-earth/10 rounded-lg p-4 text-sm space-y-1">
+              <div className="bg-warm-cream/60 border border-border rounded-lg p-4 text-sm space-y-1">
                 <p><strong>Te Amo PR / Pásalo Pa'lante</strong></p>
-                <p>{t("Website:", "Sitio:")} <a href="https://teamopr.org" target="_blank" rel="noopener noreferrer" className="text-primary underline">teamopr.org</a></p>
-                <p>{t("Movement Website:", "Sitio del movimiento:")} <a href="https://pasalopalante.com" className="text-primary underline">pasalopalante.com</a></p>
-                <p>{t("Email:", "Correo:")} <a href="mailto:info@teamopr.org" className="text-primary underline">info@teamopr.org</a> · <a href="mailto:hello@pasalopalante.com" className="text-primary underline">hello@pasalopalante.com</a></p>
+                <p>{t("Website:", "Sitio:")} <a href="https://teamopr.org" target="_blank" rel="noopener noreferrer" className="text-warm-sky underline">teamopr.org</a></p>
+                <p>{t("Movement Website:", "Sitio del movimiento:")} <a href="https://pasalopalante.com" className="text-warm-sky underline">pasalopalante.com</a></p>
+                <p>{t("Email:", "Correo:")} <a href="mailto:info@teamopr.org" className="text-warm-sky underline">info@teamopr.org</a> · <a href="mailto:hello@pasalopalante.com" className="text-warm-sky underline">hello@pasalopalante.com</a></p>
                 <p>{t("Mailing Address:", "Dirección postal:")} 550 Av. de la Constitución #905, San Juan</p>
                 <p>{t("Nonprofit Registration / EIN:", "Registro sin fines de lucro / EIN:")} 66-0975633</p>
               </div>

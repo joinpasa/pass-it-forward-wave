@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import VerticalImageStack from "@/components/VerticalImageStack";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },

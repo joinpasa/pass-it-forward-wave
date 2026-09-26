@@ -2,11 +2,13 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useUI } from "@shared/contexts/UIContext";
 import { Link } from "react-router-dom";
 
 export default function AboutPage() {
   const { lang } = useLanguage();
+  const { openShareModal } = useUI();
   const isEs = lang === "es";
 
   return (
@@ -20,7 +22,7 @@ export default function AboutPage() {
       <main className="pt-32 pb-20 section-padding">
         <article className="max-w-3xl mx-auto">
           <p className="eyebrow">Pásalo Pa'lante</p>
-          <h1 className="headline-xl text-warm-earth mt-3 mb-6">
+          <h1 className="headline-xl text-foreground mt-3 mb-6">
             {isEs ? "Sobre Pásalo Pa'lante" : "About Pásalo Pa'lante"}
           </h1>
 
@@ -31,7 +33,7 @@ export default function AboutPage() {
                 : "Pásalo Pa'lante (PPL) is a global kindness movement created by Te Amo PR, a U.S. 501(c)(3) nonprofit organization based in Puerto Rico. Our mission is to spark 1 billion acts of kindness worldwide during the Kindness Season — November 1 through January 31."}
             </p>
 
-            <h2 className="font-serif text-2xl text-warm-earth mt-10 mb-3">
+            <h2 className="font-serif text-2xl text-foreground mt-10 mb-3">
               {isEs ? "Quiénes somos" : "Who we are"}
             </h2>
             <p>
@@ -39,15 +41,15 @@ export default function AboutPage() {
                 ? "Te Amo PR es una organización sin fines de lucro reconocida por el IRS bajo la sección 501(c)(3). Las donaciones son deducibles de impuestos hasta donde permite la ley. Operamos desde Puerto Rico y servimos a comunidades en todo el mundo. Pásalo Pa'lante es una iniciativa hermana de Te Amo PR."
                 : "Te Amo PR is an IRS-recognized 501(c)(3) public charity. Donations are tax-deductible to the fullest extent allowed by law. We operate from Puerto Rico and serve communities around the world. Pásalo Pa'lante is a sister initiative of Te Amo PR."}
             </p>
-            <ul className="list-none pl-0 space-y-1 text-sm bg-warm-cream/60 border border-warm-earth/10 rounded-lg p-4">
+            <ul className="list-none pl-0 space-y-1 text-sm bg-warm-cream/60 border border-border rounded-lg p-4">
               <li><strong>{isEs ? "Organización legal:" : "Legal organization:"}</strong> Te Amo PR</li>
               <li><strong>{isEs ? "Estatus:" : "Status:"}</strong> {isEs ? "501(c)(3) reconocida por el IRS de EE.UU." : "U.S. IRS-recognized 501(c)(3) public charity"}</li>
               <li><strong>EIN:</strong> 66-0975633</li>
               <li><strong>{isEs ? "Dirección:" : "Address:"}</strong> 550 Av. de la Constitución #905, San Juan, PR</li>
-              <li><strong>{isEs ? "Sitio:" : "Website:"}</strong> <a href="https://teamopr.org" target="_blank" rel="noopener noreferrer" className="text-primary underline">teamopr.org</a></li>
+              <li><strong>{isEs ? "Sitio:" : "Website:"}</strong> <a href="https://teamopr.org" target="_blank" rel="noopener noreferrer" className="text-warm-sky underline">teamopr.org</a></li>
             </ul>
 
-            <h2 className="font-serif text-2xl text-warm-earth mt-10 mb-3">
+            <h2 className="font-serif text-2xl text-foreground mt-10 mb-3">
               {isEs ? "Lo que hacemos" : "What we do"}
             </h2>
             <p>
@@ -56,43 +58,43 @@ export default function AboutPage() {
                 : "Each season, we mobilize ambassadors, volunteers, and communities to perform, log, and share acts of kindness. We are working toward a Guinness World Record for the largest documented wave of kindness — a movement that passes from one person to the next, one country to the next."}
             </p>
 
-            <h2 className="font-serif text-2xl text-warm-earth mt-10 mb-3">
+            <h2 className="font-serif text-2xl text-foreground mt-10 mb-3">
               {isEs ? "Cómo participar" : "How to get involved"}
             </h2>
             <ul className="list-disc pl-6 space-y-2">
               <li>
-                <Link to="/commit" className="text-primary hover:underline">
+                <Link to="/commit" className="text-warm-sky hover:underline">
                   {isEs ? "Comprométete o regístrate como voluntario" : "Commit or register as a volunteer"}
                 </Link>
               </li>
               <li>
-                <Link to="/share" className="text-primary hover:underline">
+                <button type="button" onClick={() => openShareModal()} className="text-warm-sky hover:underline">
                   {isEs ? "Comparte un acto de bondad" : "Share an act of kindness"}
-                </Link>
+                </button>
               </li>
               <li>
-                <Link to="/wall" className="text-primary hover:underline">
+                <Link to="/wall" className="text-warm-sky hover:underline">
                   {isEs ? "Visita el Muro de Bondad" : "Visit the Wall of Kindness"}
                 </Link>
               </li>
               <li>
-                <Link to="/donate" className="text-primary hover:underline">
+                <Link to="/donate" className="text-warm-sky hover:underline">
                   {isEs ? "Dona para apoyar la misión" : "Donate to support the mission"}
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-primary hover:underline">
+                <Link to="/contact" className="text-warm-sky hover:underline">
                   {isEs ? "Contáctanos" : "Contact us"}
                 </Link>
               </li>
             </ul>
 
-            <h2 className="font-serif text-2xl text-warm-earth mt-10 mb-3">
+            <h2 className="font-serif text-2xl text-foreground mt-10 mb-3">
               {isEs ? "Contacto" : "Contact"}
             </h2>
             <p>
-              Te Amo PR · <a className="text-primary hover:underline" href="mailto:info@teamopr.org">info@teamopr.org</a> · (787) 705-0778 ·{" "}
-              <a className="text-primary hover:underline" href="https://teamopr.org" target="_blank" rel="noopener noreferrer">teamopr.org</a>
+              Te Amo PR · <a className="text-warm-sky hover:underline" href="mailto:info@teamopr.org">info@teamopr.org</a> · (787) 705-0778 ·{" "}
+              <a className="text-warm-sky hover:underline" href="https://teamopr.org" target="_blank" rel="noopener noreferrer">teamopr.org</a>
             </p>
           </div>
         </article>

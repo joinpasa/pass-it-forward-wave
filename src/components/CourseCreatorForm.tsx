@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@shared/components/ui/button";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
+import { Textarea } from "@shared/components/ui/textarea";
+import { Checkbox } from "@shared/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@shared/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -14,11 +14,11 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import { COUNTRIES } from "@/data/countries";
-import { cn } from "@/lib/utils";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { submitPPLForm } from "@/lib/pplForm";
+} from "@shared/components/ui/command";
+import { COUNTRIES } from "@shared/data/countries";
+import { cn } from "@shared/lib/utils";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { submitPPLForm } from "@shared/lib/pplForm";
 
 // Mirrors the GoHighLevel form:
 // "Pásalo Pa'lante Ambassador & Core Team Commitment"
@@ -255,10 +255,10 @@ export default function CourseCreatorForm() {
     return (
       <section
         id="course-creator"
-        className="bg-white/70 border border-warm-earth/10 rounded-2xl p-8 md:p-10 text-center"
+        className="bg-white/70 border border-border rounded-2xl p-8 md:p-10 text-center"
       >
         <p className="eyebrow">{c.eyebrow}</p>
-        <h2 className="font-display text-3xl md:text-4xl text-warm-earth mt-3 mb-4">
+        <h2 className="font-display text-3xl md:text-4xl text-foreground mt-3 mb-4">
           {c.heading}
         </h2>
         <p className="text-foreground/80 leading-relaxed max-w-xl mx-auto">
@@ -271,11 +271,11 @@ export default function CourseCreatorForm() {
   return (
     <section
       id="course-creator"
-      className="bg-white/70 border border-warm-earth/10 rounded-2xl p-6 md:p-10"
+      className="bg-white/70 border border-border rounded-2xl p-6 md:p-10"
     >
       <div className="mb-8 text-center max-w-2xl mx-auto">
         <p className="eyebrow">{c.eyebrow}</p>
-        <h2 className="font-display text-3xl md:text-4xl text-warm-earth mt-3 mb-3">
+        <h2 className="font-display text-3xl md:text-4xl text-foreground mt-3 mb-3">
           {c.heading}
         </h2>
         <p className="text-foreground/75 leading-relaxed">{c.subheading}</p>

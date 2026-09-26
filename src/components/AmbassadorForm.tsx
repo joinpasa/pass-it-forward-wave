@@ -8,19 +8,19 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+} from "@shared/components/ui/dialog";
+import { Button } from "@shared/components/ui/button";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
+import { Textarea } from "@shared/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+} from "@shared/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@shared/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -28,11 +28,11 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import { COUNTRIES } from "@/data/countries";
-import { cn } from "@/lib/utils";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { submitPPLForm } from "@/lib/pplForm";
+} from "@shared/components/ui/command";
+import { COUNTRIES } from "@shared/data/countries";
+import { cn } from "@shared/lib/utils";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { submitPPLForm } from "@shared/lib/pplForm";
 
 interface Props {
   open: boolean;

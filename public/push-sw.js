@@ -6,6 +6,11 @@
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
 
+// A registered fetch handler (even a pure passthrough — no respondWith,
+// no caching) is part of how some browsers decide a site is installable at
+// all. Without this, "Install app" can silently fail to become available.
+self.addEventListener("fetch", () => {});
+
 self.addEventListener("push", (event) => {
   let data = {};
   try {
@@ -17,8 +22,8 @@ self.addEventListener("push", (event) => {
   const title = data.title || "Pásalo Pa'lante";
   const options = {
     body: data.body || "",
-    icon: "/icons/icon-192.png",
-    badge: "/icons/icon-192.png",
+    icon: "/icon-192.png",
+    badge: "/icon-192.png",
     tag: data.tag || "pasalo",
     data: { url: data.url || "/app/badges" },
   };
