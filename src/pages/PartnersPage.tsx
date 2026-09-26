@@ -20,6 +20,8 @@ const assetUrl = (filename: string): string | undefined => {
 interface Partner {
   file: string;
   name: string;
+  /** White logos that need a dark card to be visible */
+  dark?: boolean;
 }
 
 const pillars: {
@@ -62,7 +64,7 @@ const pillars: {
     partners: [
       { file: "faith-based_awaken---michael-krauss", name: "Awaken — Michael Krauss" },
       { file: "faith-based_brahma-kumaris", name: "Brahma Kumaris" },
-      { file: "faith-based_iskcon", name: "ISKCON" },
+      { file: "faith-based_iskcon", name: "ISKCON", dark: true },
       { file: "faith-based_oneness", name: "Oneness" },
       { file: "faith-based_purity-weaves-destiny-blue-3-1", name: "Purity Weaves Destiny" },
       { file: "faith-based_the-art-of-living", name: "The Art of Living" },
