@@ -3,22 +3,22 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Heart, Info, Check, ChevronsUpDown } from "lucide-react";
 
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useAuth } from "@shared/contexts/AuthContext";
+import { supabase } from "@shared/integrations/supabase/client";
+import { Button } from "@shared/components/ui/button";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@shared/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@shared/components/ui/tooltip";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+} from "@shared/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@shared/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -26,10 +26,11 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import { COUNTRIES } from "@/data/countries";
-import { cn } from "@/lib/utils";
-import { submitPPLForm } from "@/lib/pplForm";
+} from "@shared/components/ui/command";
+import { COUNTRIES } from "@shared/data/countries";
+import { cn } from "@shared/lib/utils";
+import { submitPPLForm } from "@shared/lib/pplForm";
+import { getAuthErrorMessage } from "@shared/lib/authErrors";
 
 interface Props {
   onSuccess?: () => void;
@@ -41,9 +42,8 @@ interface Props {
 
 type Mode = "individual" | "organization";
 type HelpRole = "do_acts" | "champion" | "ambassador" | "civic" | "volunteer";
-type OrgType = "school" | "company" | "nonprofit" | "ngo" | "faith" | "other";
+type OrgType = "school" | "company" | "nonprofit" | "ngo" | "municipality" | "faith" | "other";
 
-const INDIVIDUAL_PRESETS = [1, 5, 10, 25, 100];
 const GROUP_PRESETS = [100, 1000, 10000];
 
 export default function CommitFlow({ onSuccess, compact = false, prefilledEmail, onClearPrefilledEmail, initialMode = "individual" }: Props) {
@@ -137,12 +137,20 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
           message: mode === "organization"
             ? `Org: ${orgName} | Type: ${orgType} | Chapter: ${chapter} | Website: ${orgWebsite}`
             : `Role: ${helpRole}`,
+          mode,
+          orgType: mode === "organization" ? orgType || undefined : undefined,
+          helpRole: mode === "individual" ? helpRole || undefined : undefined,
         });
       } catch {
         // Non-fatal — commit already succeeded
       }
       if (!user && email) {
-        signInWithMagicLink(email, firstName || undefined).catch(() => {});
+        // Not awaited — must not delay the redirect below. The "sent" page
+        // still shows unconditionally, but if this actually failed (e.g. a
+        // rate limit), surface it rather than silently pretending it worked.
+        signInWithMagicLink(email, firstName || undefined).then(({ error }) => {
+          if (error) toast.error(getAuthErrorMessage(error));
+        });
       }
       onSuccess?.();
       navigate(user ? "/account?committed=1" : "/commit?sent=" + encodeURIComponent(email));
@@ -176,6 +184,7 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
     { value: "company", label: t.commit.orgTypeCompany },
     { value: "nonprofit", label: t.commit.orgTypeNonprofit },
     { value: "ngo", label: t.commit.orgTypeNgo },
+    { value: "municipality", label: t.commit.orgTypeMunicipality },
     { value: "faith", label: t.commit.orgTypeFaith },
     { value: "other", label: t.commit.orgTypeOther },
   ];
@@ -269,7 +278,7 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
         <button
           type="button"
           onClick={() => { onClearPrefilledEmail(); setEmail(""); }}
-          className="text-xs text-terracotta hover:underline"
+          className="text-xs text-warm-sky hover:underline"
         >
           {t.share.notYou}
         </button>
@@ -380,7 +389,8 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
               <Label htmlFor="org-web" className="flex items-center gap-1.5 h-5">{t.commit.orgWebsiteLabel}</Label>
               <Input
                 id="org-web"
-                type="url"
+                type="text"
+                inputMode="url"
                 required
                 maxLength={300}
                 placeholder={t.commit.orgWebsitePlaceholder}
@@ -418,51 +428,52 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
 
         </TabsContent>
 
-        <div className="space-y-3">
-          <Label htmlFor="pledge" className="whitespace-pre-line">
-            {mode === "individual" ? t.commit.pledgeLabel : t.commit.orgPledgeLabel}
-          </Label>
-          <div className="flex flex-wrap gap-2">
-            {(mode === "organization" ? GROUP_PRESETS : INDIVIDUAL_PRESETS).map((n) => (
-              <button
-                type="button"
-                key={n}
-                onClick={() => setPledge(n)}
-                className={`px-4 py-2 rounded-full border text-sm font-medium transition-colors ${
-                  pledgeCount === n
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-background text-foreground border-border hover:border-primary"
-                }`}
-              >
-                {n}
-              </button>
-            ))}
-            <Input
-              id="pledge"
-              type="number"
-              inputMode="numeric"
-              min={mode === "organization" ? 100 : 1}
-              max={1000000000}
-              value={pledgeText}
-              onChange={(e) => {
-                const raw = e.target.value;
-                setPledgeText(raw);
-                const parsed = parseInt(raw, 10);
-                if (Number.isFinite(parsed)) setPledgeCount(Math.min(1000000000, Math.max(1, parsed)));
-              }}
-              onBlur={() => {
-                const min = mode === "organization" ? 100 : 1;
-                const parsed = parseInt(pledgeText, 10);
-                const next = Number.isFinite(parsed)
-                  ? Math.min(1000000000, Math.max(min, parsed))
-                  : min;
-                setPledge(next);
-              }}
-              className="w-28"
-            />
+        {mode === "organization" && (
+          <div className="space-y-3">
+            <Label htmlFor="pledge" className="whitespace-pre-line">
+              {t.commit.orgPledgeLabel}
+            </Label>
+            <div className="flex flex-wrap gap-2">
+              {GROUP_PRESETS.map((n) => (
+                <button
+                  type="button"
+                  key={n}
+                  onClick={() => setPledge(n)}
+                  className={`px-4 py-2 rounded-full border text-sm font-medium transition-colors ${
+                    pledgeCount === n
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background text-foreground border-border hover:border-primary"
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+              <Input
+                id="pledge"
+                type="number"
+                inputMode="numeric"
+                min={100}
+                max={1000000000}
+                value={pledgeText}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  setPledgeText(raw);
+                  const parsed = parseInt(raw, 10);
+                  if (Number.isFinite(parsed)) setPledgeCount(Math.min(1000000000, Math.max(1, parsed)));
+                }}
+                onBlur={() => {
+                  const parsed = parseInt(pledgeText, 10);
+                  const next = Number.isFinite(parsed)
+                    ? Math.min(1000000000, Math.max(100, parsed))
+                    : 100;
+                  setPledge(next);
+                }}
+                className="w-28"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">{t.commit.pledgeHint}</p>
           </div>
-          <p className="text-xs text-muted-foreground">{t.commit.pledgeHint}</p>
-        </div>
+        )}
 
 
         {!user && (
@@ -475,7 +486,7 @@ export default function CommitFlow({ onSuccess, compact = false, prefilledEmail,
             />
             <span>
               {t.share.termsAgreePrefix}{" "}
-              <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline text-primary">
+              <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline text-warm-sky">
                 {t.share.termsLink}
               </a>
               .

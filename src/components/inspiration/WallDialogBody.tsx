@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Heart, Loader2 } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 import { useActTranslation } from "@/hooks/useActTranslation";
 
 interface Props {

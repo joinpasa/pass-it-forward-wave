@@ -6,8 +6,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import ScrollToTop from "@/components/ScrollToTop";
-import { supabase } from "@/integrations/supabase/client";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { supabasePublic } from "@shared/integrations/supabase/publicClient";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
@@ -56,6 +56,7 @@ const MapPage = () => {
   const [rows, setRows] = useState<CountRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [centroids, setCentroids] = useState<Record<string, [number, number]>>({});
+  const [allCountries, setAllCountries] = useState<{ name: string; coordinates: [number, number] }[]>([]);
   const [center, setCenter] = useState<[number, number]>([0, 20]);
   const [zoom, setZoom] = useState(MIN_ZOOM);
   const [userLoc, setUserLoc] = useState<[number, number] | null>(null);
@@ -68,7 +69,7 @@ const MapPage = () => {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data } = await supabase.rpc("kindness_map_counts");
+      const { data } = await supabasePublic.rpc("kindness_map_counts");
       if (!cancelled) {
         setRows(((data as CountRow[]) ?? []).filter((r) => r.country));
         setLoading(false);
@@ -119,11 +120,22 @@ const MapPage = () => {
       .filter(Boolean) as Point[];
   }, [rows, centroids]);
 
-  const suggestions = useMemo(() => {
+  const suggestions = useMemo<Point[]>(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
-    return points.filter((p) => p.country.toLowerCase().includes(q)).slice(0, 6);
-  }, [query, points]);
+    return allCountries
+      .filter((c) => c.name.toLowerCase().includes(q))
+      .slice(0, 6)
+      .map((c) => {
+        const row = rows.find((r) => normalize(r.country) === normalize(c.name));
+        return {
+          country: c.name,
+          coordinates: c.coordinates,
+          acts: row ? Number(row.acts) : 0,
+          commitments: row ? Number(row.commitments) : 0,
+        };
+      });
+  }, [query, allCountries, rows]);
 
   const totals = useMemo(
     () =>
@@ -212,11 +224,19 @@ const MapPage = () => {
                   {({ geographies }) => {
                     if (Object.keys(centroids).length === 0 && geographies.length > 0) {
                       const next: Record<string, [number, number]> = {};
+                      const named: { name: string; coordinates: [number, number] }[] = [];
                       geographies.forEach((geo) => {
                         const name = geo.properties?.name ?? geo.properties?.NAME;
-                        if (name) next[normalize(String(name))] = geoCentroid(geo) as [number, number];
+                        if (name) {
+                          const coords = geoCentroid(geo) as [number, number];
+                          next[normalize(String(name))] = coords;
+                          named.push({ name: String(name), coordinates: coords });
+                        }
                       });
-                      setTimeout(() => setCentroids(next), 0);
+                      setTimeout(() => {
+                        setCentroids(next);
+                        setAllCountries(named);
+                      }, 0);
                     }
                     return geographies.map((geo) => (
                       <Geography

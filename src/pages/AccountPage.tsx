@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { supabase } from "@/integrations/supabase/client";
+import { X } from "lucide-react";
+import { useAuth } from "@shared/contexts/AuthContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { supabase } from "@shared/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProfileHeader from "@/components/account/ProfileHeader";
+import SetPasswordCard from "@/components/account/SetPasswordCard";
 import YourActs from "@/components/account/YourActs";
 import InspirationCard from "@/components/account/InspirationCard";
 import YourCommitment from "@/components/account/YourCommitment";
 import StreaksBadges from "@/components/account/StreaksBadges";
-import RemindersCard from "@/components/account/RemindersCard";
+import MovementStats from "@/components/account/MovementStats";
 import YourGroup from "@/components/account/YourGroup";
 import YourInvitations from "@/components/account/YourInvitations";
-import ProfileSettingsCard from "@/components/account/ProfileSettingsCard";
-import SetPasswordCard from "@/components/account/SetPasswordCard";
-import { Skeleton } from "@/components/ui/skeleton";
+import WelcomeCarousel, { type OnboardingResult } from "@/components/account/WelcomeCarousel";
+import { Skeleton } from "@shared/components/ui/skeleton";
+import { submitPPLForm } from "@shared/lib/pplForm";
 
 const AccountPage = () => {
   const { t } = useLanguage();
@@ -25,7 +27,10 @@ const AccountPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [profile, setProfile] = useState<any>(null);
   const [profileLoading, setProfileLoading] = useState(true);
-  const [profileRefresh, setProfileRefresh] = useState(0);
+  const [passwordPromptDismissed, setPasswordPromptDismissed] = useState(false);
+  const [hasCommitment, setHasCommitment] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingBusy, setOnboardingBusy] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth", { replace: true });
@@ -47,18 +52,73 @@ const AccountPage = () => {
       // (e.g. submitted before sign-up). The DB also has a trigger that
       // auto-links on insert; this covers anything legacy.
       try { await supabase.rpc("claim_my_acts"); } catch { /* non-fatal */ }
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      const [{ data }, { data: commitments }] = await Promise.all([
+        supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle(),
+        supabase.from("commitments").select("id").eq("type", "individual").eq("user_id", user.id).limit(1),
+      ]);
       if (!cancelled) {
         setProfile(data);
+        setHasCommitment((commitments ?? []).length > 0);
         setProfileLoading(false);
+        if (data && !data.onboarding_seen && !(commitments ?? []).length) setShowOnboarding(true);
       }
     })();
     return () => { cancelled = true; };
-  }, [user, profileRefresh]);
+  }, [user]);
+
+  async function finishOnboarding({ pledgeCount, firstName, lastName, country }: OnboardingResult) {
+    if (!user) return;
+    setOnboardingBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("submit-commitment", {
+        body: {
+          type: "individual",
+          first_name: firstName,
+          last_name: lastName,
+          email: user.email,
+          pledge_count: pledgeCount,
+          country,
+          help_role: "do_acts",
+        },
+      });
+      const failure = (data as { error?: string } | null)?.error ?? error?.message;
+      if (failure) toast.error(failure);
+      else setHasCommitment(true);
+      // PPL Integration — sync to Airtable + GHL (tags get-involved-lead /
+      // get-involved-individual). CommitFlow.tsx's individual pledge already
+      // does this; this onboarding-carousel pledge is the same kind of
+      // commitment and was missing this sync entirely.
+      try {
+        await submitPPLForm("pledge", {
+          fullName: `${firstName} ${lastName}`.trim(),
+          email: user.email || "",
+          country: country || undefined,
+          pledgeCount,
+          message: "Role: do_acts",
+          mode: "individual",
+          helpRole: "do_acts",
+          pledgeContext: "onboarding",
+        });
+      } catch {
+        // Non-fatal — commitment already succeeded
+      }
+    } catch {
+      toast.error("Something went wrong saving your pledge. You can set it later below.");
+    } finally {
+      // Not checked previously — a failed update here meant the carousel
+      // dismissed in the UI while onboarding_seen never actually persisted,
+      // so it could silently reappear on the next visit even though the
+      // pledge itself had already saved fine.
+      const { error: seenError } = await supabase
+        .from("profiles")
+        .update({ onboarding_seen: true })
+        .eq("user_id", user.id);
+      if (seenError) console.error("onboarding_seen update failed", seenError);
+      setProfile((prev: any) => (prev ? { ...prev, onboarding_seen: true } : prev));
+      setOnboardingBusy(false);
+      setShowOnboarding(false);
+    }
+  }
 
 
   // Flush any signup consent stashed in sessionStorage during /auth → magic link → /account.
@@ -110,6 +170,18 @@ const AccountPage = () => {
     );
   }
 
+  if (showOnboarding) {
+    return (
+      <WelcomeCarousel
+        firstName={profile?.first_name || ""}
+        lastName={profile?.last_name || ""}
+        country={profile?.country || ""}
+        onFinish={finishOnboarding}
+        busy={onboardingBusy}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-warm-cream pb-32">
       <Navbar />
@@ -120,26 +192,32 @@ const AccountPage = () => {
           <ProfileHeader profile={profile} />
         )}
 
+        {!profileLoading && profile && !profile.has_password && !passwordPromptDismissed && (
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setPasswordPromptDismissed(true)}
+              aria-label={t.account.dismiss}
+              className="absolute right-4 top-4 text-foreground/40 hover:text-foreground/70"
+            >
+              <X size={16} />
+            </button>
+            <SetPasswordCard />
+          </div>
+        )}
+
         <StreaksBadges userId={user.id} />
+        <MovementStats />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             <InspirationCard />
             <YourActs userId={user.id} />
             <YourCommitment userId={user.id} email={profile?.email || user.email || ""} />
-            {!profileLoading && (
-              <ProfileSettingsCard
-                userId={user.id}
-                profile={profile}
-                onSaved={() => setProfileRefresh((n) => n + 1)}
-              />
-            )}
           </div>
           <div className="space-y-8">
             <YourGroup userId={user.id} />
             <YourInvitations userId={user.id} />
-            <RemindersCard userId={user.id} email={profile?.email || user.email || ""} />
-            <SetPasswordCard />
           </div>
         </div>
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@shared/integrations/supabase/client";
 
 /** Fetches the signed-in user's opaque referral code (null when signed out). */
 export function useReferralCode(userId?: string | null) {

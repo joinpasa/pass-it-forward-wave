@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import { toPng } from "html-to-image";
-import { supabase } from "@/integrations/supabase/client";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { supabase } from "@shared/integrations/supabase/client";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useUI } from "@shared/contexts/UIContext";
+import { Button } from "@shared/components/ui/button";
+import { Skeleton } from "@shared/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@shared/components/ui/tabs";
 import { Trash2, Heart, Share2 } from "lucide-react";
 import { toast } from "sonner";
-import ShareGraphic from "@/components/share/ShareGraphic";
-import ShareDialog from "@/components/share/ShareDialog";
+import ShareGraphic from "@shared/components/share/ShareGraphic";
+import ShareDialog from "@shared/components/share/ShareDialog";
 import { useReferralCode } from "@/hooks/useReferralCode";
-import { siteOrigin, withReferral } from "@/lib/referral";
+import { siteOrigin, withReferral } from "@shared/lib/referral";
 
 interface Act {
   id: string;
@@ -34,6 +34,7 @@ function publicPhotoUrl(path: string) {
 
 const YourActs = ({ userId }: { userId: string }) => {
   const { t, lang } = useLanguage();
+  const { openShareModal } = useUI();
   const referralCode = useReferralCode(userId);
   const [acts, setActs] = useState<Act[] | null>(null);
   const [mode, setMode] = useState<Mode>("all");
@@ -107,9 +108,9 @@ const YourActs = ({ userId }: { userId: string }) => {
         <h2 className="font-serif text-2xl">
           {t.account.actsHeading.replace("{count}", String(total))}
         </h2>
-        <Link to="/share" className="text-sm text-terracotta hover:underline">
+        <button type="button" onClick={() => openShareModal()} className="text-sm text-warm-sky hover:underline">
           + {t.account.logAnother}
-        </Link>
+        </button>
       </div>
 
       <Tabs value={mode} onValueChange={(v) => setMode(v as Mode)} className="w-full mb-6">
@@ -129,7 +130,7 @@ const YourActs = ({ userId }: { userId: string }) => {
       ) : filtered.length === 0 ? (
         <div className="text-center py-10">
           <p className="text-foreground/60 mb-4">{t.account.emptyActs}</p>
-          <Button asChild><Link to="/share">{t.share.sectionCta}</Link></Button>
+          <Button onClick={() => openShareModal()}>{t.share.sectionCta}</Button>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">

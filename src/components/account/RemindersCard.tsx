@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { supabase } from "@shared/integrations/supabase/client";
+import { Button } from "@shared/components/ui/button";
+import { Skeleton } from "@shared/components/ui/skeleton";
 import { toast } from "sonner";
 import { Bell, Check } from "lucide-react";
 

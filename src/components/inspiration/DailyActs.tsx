@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Check, Loader2, RefreshCw, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useUI } from "@/contexts/UIContext";
-import { supabase } from "@/integrations/supabase/client";
-import ShareActFlow from "@/components/share/ShareActFlow";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@shared/components/ui/dialog";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useUI } from "@shared/contexts/UIContext";
+import { supabase } from "@shared/integrations/supabase/client";
+import ShareActFlow from "@shared/components/share/ShareActFlow";
 import { toast } from "sonner";
 
 interface Act {
@@ -18,7 +18,7 @@ const STORAGE_KEY = (date: string) => `inspiration:done:${date}`;
 
 export default function DailyActs() {
   const { t, lang } = useLanguage();
-  const { setShareModalOpen } = useUI();
+  const { setLocalShareFlowOpen } = useUI();
   const [acts, setActs] = useState<Act[] | null>(null);
   const [date, setDate] = useState<string>("");
   const [loading, setLoading] = useState(true);
@@ -53,9 +53,9 @@ export default function DailyActs() {
   }, [lang]);
 
   useEffect(() => {
-    setShareModalOpen(openIdx !== null);
-    return () => setShareModalOpen(false);
-  }, [openIdx, setShareModalOpen]);
+    setLocalShareFlowOpen(openIdx !== null);
+    return () => setLocalShareFlowOpen(false);
+  }, [openIdx, setLocalShareFlowOpen]);
 
   function markDone(idx: number) {
     if (done.includes(idx)) return;

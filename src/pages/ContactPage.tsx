@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import SEO from "@/components/SEO";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 
 export default function ContactPage() {
   const { lang } = useLanguage();
@@ -20,7 +20,7 @@ export default function ContactPage() {
       <main className="pt-32 pb-20 section-padding">
         <div className="max-w-2xl mx-auto text-center">
           <p className="eyebrow">Pásalo Pa'lante</p>
-          <h1 className="headline-xl text-warm-earth mt-3 mb-4">
+          <h1 className="headline-xl text-foreground mt-3 mb-4">
             {isEs ? "Contáctanos" : "Contact us"}
           </h1>
           <p className="text-base md:text-lg text-foreground/75 leading-relaxed mb-10">

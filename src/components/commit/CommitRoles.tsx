@@ -1,4 +1,4 @@
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 
 const CONTENT = {
   en: {
@@ -155,11 +155,11 @@ export default function CommitRoles() {
 
         <p className="body-md text-muted-foreground text-center">
           {c.getOutro}{" "}
-          <a href={`mailto:${c.contactEmail}`} className="text-primary underline">
+          <a href={`mailto:${c.contactEmail}`} className="text-warm-sky underline">
             {c.contactEmail}
           </a>{" "}
           ·{" "}
-          <a href={`tel:${c.contactPhone.replace(/[^\d+]/g, "")}`} className="text-primary underline">
+          <a href={`tel:${c.contactPhone.replace(/[^\d+]/g, "")}`} className="text-warm-sky underline">
             {c.contactPhone}
           </a>
         </p>

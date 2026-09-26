@@ -1,7 +1,7 @@
 import { useSearchParams } from "react-router-dom";
 import { CheckCircle2, Heart } from "lucide-react";
 
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";

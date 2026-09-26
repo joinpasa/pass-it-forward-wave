@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import WaveForwardArrow from "@/components/icons/WaveForwardArrow";
+import WaveForwardArrow from "@shared/components/icons/WaveForwardArrow";
 
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@shared/contexts/LanguageContext";
+import { useUI } from "@shared/contexts/UIContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import KindnessCard from "@/components/share/KindnessCard";
+import KindnessCard from "@shared/components/share/KindnessCard";
 import CommitFlow from "@/components/commit/CommitFlow";
 import CommitRoles from "@/components/commit/CommitRoles";
-import { supabase } from "@/integrations/supabase/client";
-import { getStoredReferral } from "@/lib/referral";
+import { supabase } from "@shared/integrations/supabase/client";
+import { supabasePublic } from "@shared/integrations/supabase/publicClient";
+import { getStoredReferral } from "@shared/lib/referral";
 
 interface Act {
   id: string;
@@ -27,6 +29,7 @@ function publicPhotoUrl(path: string) {
 function Inner() {
   const { id } = useParams<{ id: string }>();
   const { t } = useLanguage();
+  const { openShareModal } = useUI();
   const [act, setAct] = useState<Act | null>(null);
   const [loading, setLoading] = useState(true);
   const [inviterName, setInviterName] = useState<string | null>(null);
@@ -37,7 +40,7 @@ function Inner() {
       getStoredReferral();
     if (!code) return;
     (async () => {
-      const { data } = await supabase.rpc("referrer_display_name", { code });
+      const { data } = await supabasePublic.rpc("referrer_display_name", { code });
       if (typeof data === "string" && data.trim()) setInviterName(data.trim());
     })();
   }, []);
@@ -139,9 +142,9 @@ function Inner() {
 
             <p className="text-sm text-muted-foreground mb-4">
               {t.joinWave.orShare}{" "}
-              <Link to="/share" className="text-primary font-bold hover:underline">
+              <button type="button" onClick={() => openShareModal()} className="text-warm-sky font-bold hover:underline">
                 {t.joinWave.shareCta} →
-              </Link>
+              </button>
             </p>
 
             <div className="bg-card border border-border rounded-2xl p-6 md:p-8 shadow-sm">
