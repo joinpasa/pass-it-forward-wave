@@ -6,11 +6,15 @@ import { Link } from "react-router-dom";
 import { Building2, HeartHandshake, Landmark, HandHeart, GraduationCap } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 
-const pointers = import.meta.glob<{ url: string }>("../assets/partners/*.asset.json", { eager: true });
+const pointers = import.meta.glob<{ url?: string; default?: { url: string } }>(
+  "../assets/partners/*.asset.json",
+  { eager: true }
+);
 
 const assetUrl = (filename: string): string | undefined => {
   const key = Object.keys(pointers).find((k) => k.endsWith(`/${filename}.asset.json`));
-  return key ? pointers[key].url : undefined;
+  if (!key) return undefined;
+  return pointers[key].url ?? pointers[key].default?.url;
 };
 
 interface Partner {
