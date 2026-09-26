@@ -6,53 +6,123 @@ import { Link } from "react-router-dom";
 import { Building2, HeartHandshake, Landmark, HandHeart, GraduationCap } from "lucide-react";
 import { useLanguage } from "@shared/contexts/LanguageContext";
 
+const pointers = import.meta.glob<{ url?: string; default?: { url: string } }>(
+  "../assets/partners/*.asset.json",
+  { eager: true }
+);
+
+const assetUrl = (filename: string): string | undefined => {
+  const key = Object.keys(pointers).find((k) => k.includes(`/${filename}.`));
+  if (!key) return undefined;
+  return pointers[key].url ?? pointers[key].default?.url;
+};
+
+interface Partner {
+  file: string;
+  name: string;
+  /** White logos that need a dark card to be visible */
+  dark?: boolean;
+}
+
+const pillars: {
+  icon: typeof Building2;
+  title: [string, string];
+  description: [string, string];
+  partners: Partner[];
+}[] = [
+  {
+    icon: Building2,
+    title: ["Corporate", "Corporativo"],
+    description: [
+      "Businesses and brands that sponsor kindness activations, match their teams' volunteer hours, and help fund the movement's reach.",
+      "Empresas y marcas que patrocinan activaciones de bondad, igualan las horas de voluntariado de sus equipos y ayudan a financiar el alcance del movimiento.",
+    ],
+    partners: [
+      { file: "corporate_animaze", name: "Animaze" },
+      { file: "corporate_c-suite-network", name: "C-Suite Network" },
+      { file: "corporate_caribbean-cinemas-logo", name: "Caribbean Cinemas" },
+      { file: "corporate_eucaforest-logo1b", name: "Eucaforest" },
+      { file: "corporate_gdd_goodpop_logo", name: "Good Pop" },
+      { file: "corporate_goodnewsnetwork_logo", name: "Good News Network" },
+      { file: "corporate_hb-cbc-news", name: "HB CBC News" },
+      { file: "corporate_hts", name: "HTS" },
+      { file: "corporate_laser101-st-maarteen", name: "Laser 101 St Maarten" },
+      { file: "corporate_mone--you", name: "Mone & You" },
+      { file: "corporate_platea-pr", name: "Platea PR" },
+      { file: "corporate_tv15sxm", name: "TV15SXM" },
+      { file: "corporate_the_weather_network_2011", name: "The Weather Network" },
+      { file: "corporate_logo-bmedia--color", name: "bMedia" },
+    ],
+  },
+  {
+    icon: HeartHandshake,
+    title: ["Faith-Based", "Basado en la Fe"],
+    description: [
+      "Churches, ministries, and faith communities that mobilize their congregations and weave kindness into their service to others.",
+      "Iglesias, ministerios y comunidades de fe que movilizan a sus congregaciones y entretejen la bondad en su servicio a los demás.",
+    ],
+    partners: [
+      { file: "faith-based_awaken---michael-krauss", name: "Awaken — Michael Krauss" },
+      { file: "faith-based_brahma-kumaris", name: "Brahma Kumaris" },
+      { file: "faith-based_iskcon", name: "ISKCON", dark: true },
+      { file: "faith-based_oneness", name: "Oneness" },
+      { file: "faith-based_purity-weaves-destiny-blue-3-1", name: "Purity Weaves Destiny" },
+      { file: "faith-based_the-art-of-living", name: "The Art of Living" },
+      { file: "faith-based_yoga-vidya", name: "Yoga Vidya" },
+    ],
+  },
+  {
+    icon: Landmark,
+    title: ["Government", "Gobierno"],
+    description: [
+      "Municipalities and public agencies that bring the campaign to their cities, proclaim the Kindness Season, and support local activations.",
+      "Municipios y agencias públicas que llevan la campaña a sus ciudades, proclaman la Temporada de Bondad y apoyan activaciones locales.",
+    ],
+    partners: [
+      { file: "government_montserrat", name: "Montserrat" },
+      { file: "government_wipr6", name: "WIPR" },
+    ],
+  },
+  {
+    icon: HandHeart,
+    title: ["Nonprofits", "Sin Fines de Lucro"],
+    description: [
+      "Community organizations that co-host activations, share kindness resources, and connect the movement to the people they serve.",
+      "Organizaciones comunitarias que co-organizan activaciones, comparten recursos de bondad y conectan el movimiento con las personas que sirven.",
+    ],
+    partners: [
+      { file: "nonprofits_70e7b25ec4_wedu_logo_navy_web", name: "WEDU" },
+      { file: "nonprofits_ad-council.brightspotcdn", name: "Ad Council" },
+      { file: "nonprofits_aiesec_logo_black", name: "AIESEC" },
+      { file: "nonprofits_coqui-sq-logo-small-2-1", name: "Coquí" },
+      { file: "nonprofits_hmi-logo", name: "HMI" },
+      { file: "nonprofits_hitn", name: "HITN" },
+      { file: "nonprofits_kids-for-peace", name: "Kids for Peace" },
+      { file: "nonprofits_main_logo", name: "Main" },
+      { file: "nonprofits_million-peacemakers", name: "Million Peacemakers" },
+      { file: "nonprofits_pbs_logo_2019", name: "PBS" },
+      { file: "nonprofits_rotary-westminster", name: "Rotary Westminster" },
+      { file: "nonprofits_wkm_wide", name: "WKM" },
+    ],
+  },
+  {
+    icon: GraduationCap,
+    title: ["Education", "Educación"],
+    description: [
+      "Schools, campuses, and educators who bring kindness into classrooms with age-appropriate prompts, activities, and student-led projects.",
+      "Escuelas, recintos universitarios y educadores que llevan la bondad a los salones con consignas apropiadas para cada edad, actividades y proyectos liderados por estudiantes.",
+    ],
+    partners: [
+      { file: "education_departamento-educacion-pr", name: "Departamento de Educación PR" },
+      { file: "education_mecys", name: "MECYS" },
+    ],
+  },
+];
+
 export default function PartnersPage() {
   const { lang } = useLanguage();
   const isEs = lang === "es";
   const t = (en: string, es: string) => (isEs ? es : en);
-
-  const pillars = [
-    {
-      icon: Building2,
-      title: t("Corporate", "Corporativo"),
-      description: t(
-        "Businesses and brands that sponsor kindness activations, match their teams' volunteer hours, and help fund the movement's reach.",
-        "Empresas y marcas que patrocinan activaciones de bondad, igualan las horas de voluntariado de sus equipos y ayudan a financiar el alcance del movimiento."
-      ),
-    },
-    {
-      icon: HeartHandshake,
-      title: t("Faith-Based", "Basado en la Fe"),
-      description: t(
-        "Churches, ministries, and faith communities that mobilize their congregations and weave kindness into their service to others.",
-        "Iglesias, ministerios y comunidades de fe que movilizan a sus congregaciones y entretejen la bondad en su servicio a los demás."
-      ),
-    },
-    {
-      icon: Landmark,
-      title: t("Government", "Gobierno"),
-      description: t(
-        "Municipalities and public agencies that bring the campaign to their cities, proclaim the Kindness Season, and support local activations.",
-        "Municipios y agencias públicas que llevan la campaña a sus ciudades, proclaman la Temporada de Bondad y apoyan activaciones locales."
-      ),
-    },
-    {
-      icon: HandHeart,
-      title: t("Nonprofits", "Sin Fines de Lucro"),
-      description: t(
-        "Community organizations that co-host activations, share kindness resources, and connect the movement to the people they serve.",
-        "Organizaciones comunitarias que co-organizan activaciones, comparten recursos de bondad y conectan el movimiento con las personas que sirven."
-      ),
-    },
-    {
-      icon: GraduationCap,
-      title: t("Education", "Educación"),
-      description: t(
-        "Schools, campuses, and educators who bring kindness into classrooms with age-appropriate prompts, activities, and student-led projects.",
-        "Escuelas, recintos universitarios y educadores que llevan la bondad a los salones con consignas apropiadas para cada edad, actividades y proyectos liderados por estudiantes."
-      ),
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-warm-cream">
@@ -84,32 +154,43 @@ export default function PartnersPage() {
             {pillars.map((pillar) => {
               const Icon = pillar.icon;
               return (
-                <section key={pillar.title} aria-labelledby={`pillar-${pillar.title}`}>
+                <section key={pillar.title[0]} aria-labelledby={`pillar-${pillar.title[0]}`}>
                   <div className="flex items-start gap-4 mb-6">
                     <span className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-warm-sand text-warm-earth">
                       <Icon size={22} />
                     </span>
                     <div>
-                      <h2 id={`pillar-${pillar.title}`} className="font-display text-2xl md:text-3xl text-foreground">
-                        {pillar.title}
+                      <h2
+                        id={`pillar-${pillar.title[0]}`}
+                        className="font-display text-2xl md:text-3xl text-foreground"
+                      >
+                        {t(pillar.title[0], pillar.title[1])}
                       </h2>
-                      <p className="text-foreground/75 leading-relaxed max-w-3xl mt-2">{pillar.description}</p>
+                      <p className="text-foreground/75 leading-relaxed max-w-3xl mt-2">
+                        {t(pillar.description[0], pillar.description[1])}
+                      </p>
                     </div>
                   </div>
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {[1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border bg-white/50 px-6 py-10 text-center"
-                      >
-                        <span className="text-sm font-medium tracking-wide uppercase text-foreground/40">
-                          {t("Partner Name", "Nombre del Socio")}
-                        </span>
-                        <span className="mt-2 text-xs text-foreground/35">
-                          {t("Coming soon", "Próximamente")}
-                        </span>
-                      </div>
-                    ))}
+                  <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+                    {pillar.partners.map((partner) => {
+                      const url = assetUrl(partner.file);
+                      if (!url) return null;
+                      return (
+                        <div
+                          key={partner.file}
+                          className={`flex items-center justify-center rounded-2xl border border-border px-6 py-8 transition-shadow duration-200 hover:shadow-lg ${
+                            partner.dark ? "bg-warm-earth text-warm-cream" : "bg-warm-sand/80"
+                          }`}
+                        >
+                          <img
+                            src={url}
+                            alt={partner.name}
+                            loading="lazy"
+                            className="max-h-16 w-auto max-w-full object-contain"
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
                 </section>
               );
