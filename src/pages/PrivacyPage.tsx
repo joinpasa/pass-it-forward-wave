@@ -43,7 +43,7 @@ export default function PrivacyPage() {
             <p className="text-sm text-foreground/60 mt-3">
               {t("Effective Date: June 17, 2026", "Fecha de vigencia: 17 de junio de 2026")}
               {" · "}
-              {t("Last Updated: June 17, 2026", "Última actualización: 17 de junio de 2026")}
+              {t("Last Updated: September 26, 2026", "Última actualización: 26 de septiembre de 2026")}
             </p>
             <div className="mt-4 text-sm text-foreground/70 space-y-1">
               <p>
