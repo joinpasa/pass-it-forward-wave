@@ -108,7 +108,7 @@ const Navbar = () => {
             }
             alt="Pass Kindness Forward"
             title="Pass Kindness Forward"
-            className="h-[52px] w-auto object-contain transition-all duration-300"
+            className="h-[60px] w-auto object-contain transition-all duration-300"
           />
           <span className={`text-lg font-extralight ${isSolid ? "text-foreground/30" : "text-white/40"}`} aria-hidden="true">×</span>
           <img
