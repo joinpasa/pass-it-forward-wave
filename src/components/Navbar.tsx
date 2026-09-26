@@ -100,12 +100,6 @@ const Navbar = () => {
       <div className="section-padding flex items-center justify-between h-20 gap-4">
         <Link to="/" className="shrink-0 flex items-center gap-2 md:gap-2.5">
           <img
-            src="/logo-PPL.png"
-            alt="Pásalo Pa'lante"
-            className={`h-10 transition-all duration-300 ${isSolid ? "" : "brightness-0 invert"}`}
-          />
-          <span className={`text-lg font-extralight ${isSolid ? "text-foreground/30" : "text-white/40"}`} aria-hidden="true">×</span>
-          <img
             src={isSolid ? "/logo-PKF-horizontal-color.png" : "/logo-PKF-white-horizontal.png"}
             srcSet={
               isSolid
@@ -114,7 +108,13 @@ const Navbar = () => {
             }
             alt="Pass Kindness Forward"
             title="Pass Kindness Forward"
-            className="h-10 w-auto object-contain"
+            className="h-[52px] w-auto object-contain transition-all duration-300"
+          />
+          <span className={`text-lg font-extralight ${isSolid ? "text-foreground/30" : "text-white/40"}`} aria-hidden="true">×</span>
+          <img
+            src="/logo-PPL.png"
+            alt="Pásalo Pa'lante"
+            className={`h-7 w-auto transition-all duration-300 ${isSolid ? "" : "brightness-0 invert"}`}
           />
         </Link>
 
