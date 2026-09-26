@@ -178,7 +178,9 @@ export default function PartnersPage() {
                       return (
                         <div
                           key={partner.file}
-                          className="flex items-center justify-center rounded-2xl border border-border bg-warm-sand/80 px-6 py-8 transition-shadow duration-200 hover:shadow-lg"
+                          className={`flex items-center justify-center rounded-2xl border border-border px-6 py-8 transition-shadow duration-200 hover:shadow-lg ${
+                            partner.dark ? "bg-warm-earth text-warm-cream" : "bg-warm-sand/80"
+                          }`}
                         >
                           <img
                             src={url}
