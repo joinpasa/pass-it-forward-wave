@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import ScrollToTop from "@/components/ScrollToTop";
 import { Button } from "@shared/components/ui/button";
-import { scienceConcepts, measurementAreas, researchUrl } from "@/data/science";
+import { scienceConcepts, measurementAreas, researchUrl, conceptSlug } from "@/data/science";
 import kindnessPhoto from "@/assets/kindness-hug.jpg";
 
 const researchRoles = [
@@ -91,7 +91,7 @@ export default function SciencePage() {
             </div>
             <p className="mb-8 text-sm leading-relaxed text-muted-foreground">The labels below reflect the source framework, not a claim of universal scientific consensus. Evidence strength varies; intention-based physical-system claims remain debated and require independent replication.</p>
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {scienceConcepts.map((concept) => <article key={concept.number} className="flex flex-col rounded-lg border border-border bg-card p-6 transition-colors hover:border-secondary/60"><div className="flex items-center justify-between gap-3"><span className="text-3xl font-serif text-muted-foreground/60">{concept.number}</span><span className={`text-xs font-semibold uppercase ${concept.status === "Established" ? "text-secondary" : concept.status === "Emerging" ? "text-primary" : "text-warm-sky"}`}>{concept.status}</span></div><h3 className="mt-5 text-2xl leading-snug">{concept.title}</h3><p className="mt-3 mb-6 text-sm leading-relaxed text-muted-foreground">{concept.body}</p><Button asChild variant="link" className="mt-auto justify-start px-0"><a href={concept.url} target="_blank" rel="noopener noreferrer" aria-label={`Explore the science: ${concept.title}`}>Explore the science <ArrowUpRight /></a></Button></article>)}
+              {scienceConcepts.map((concept) => <article key={concept.number} className="flex flex-col rounded-lg border border-border bg-card p-6 transition-colors hover:border-secondary/60"><div className="flex items-center justify-between gap-3"><span className="text-3xl font-serif text-muted-foreground/60">{concept.number}</span><span className={`text-xs font-semibold uppercase ${concept.status === "Established" ? "text-secondary" : concept.status === "Emerging" ? "text-primary" : "text-warm-sky"}`}>{concept.status}</span></div><h3 className="mt-5 text-2xl leading-snug">{concept.title}</h3><p className="mt-3 mb-6 text-sm leading-relaxed text-muted-foreground">{concept.body}</p><Button asChild variant="link" className="mt-auto justify-start px-0"><Link to={`/science/${conceptSlug(concept.title)}`} aria-label={`Explore the science: ${concept.title}`}>Explore the science <ArrowUpRight /></Link></Button></article>)}
             </div>
           </div>
         </section>

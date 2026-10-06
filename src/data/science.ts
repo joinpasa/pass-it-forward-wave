@@ -161,3 +161,6 @@ export const measurementAreas = [
     ]
   }
 ] as const;
+
+export const conceptSlug = (title: string) =>
+  title.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");

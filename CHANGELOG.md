@@ -9,6 +9,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 ---
 
 ## 2026-10-06 — will@willpoweredstudios.com
+- Each of the 12 Science concepts now opens its own article page on our site, in our style, instead of sending visitors to an outside page.
 
 - **Added a Science page in the website's existing style.** It brings together the twelve science concepts, Puerto Rico campaign observations, measurement opportunities, and research invitation, with links to the original deep dives. Science is available in Explore and the footer; exploratory claims are distinguished from demonstrated outcomes. This update is not published live.
 - **The five GoHighLevel forms on the Get Involved pages (Schools, Nonprofits & Faith, Ambassadors, Municipalities, Companies) can now feed Airtable.** These forms are embedded straight from GHL, so until now their submissions only ever reached GHL and never the PPL CRM in Airtable. A new backend endpoint (`ghl-form-intake`) receives each submission from a GHL workflow and records it in PPL Signups plus PPL Contacts (matched by email so the same person doesn't get duplicated), tagged with which form it came from and the right participant type. It goes live once the GHL workflows and its shared-secret setting are configured.
