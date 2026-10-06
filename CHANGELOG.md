@@ -10,6 +10,7 @@ Format per entry: **date — who asked for it — what changed, in plain terms.*
 
 ## 2026-10-06 — will@willpoweredstudios.com
 
+- **Added a Science page in the website's existing style.** It brings together the twelve science concepts, Puerto Rico campaign observations, measurement opportunities, and research invitation, with links to the original deep dives. Science is available in Explore and the footer; exploratory claims are distinguished from demonstrated outcomes. This update is not published live.
 - **The five GoHighLevel forms on the Get Involved pages (Schools, Nonprofits & Faith, Ambassadors, Municipalities, Companies) can now feed Airtable.** These forms are embedded straight from GHL, so until now their submissions only ever reached GHL and never the PPL CRM in Airtable. A new backend endpoint (`ghl-form-intake`) receives each submission from a GHL workflow and records it in PPL Signups plus PPL Contacts (matched by email so the same person doesn't get duplicated), tagged with which form it came from and the right participant type. It goes live once the GHL workflows and its shared-secret setting are configured.
 - **Fixed pledge totals in Airtable being overwritten instead of added up.** When someone who was already a contact pledged again, their "Total Pledges" was replaced with just the latest pledge, because the contact lookup was reading fields in a format it wasn't asking for. Repeat pledgers' totals now accumulate correctly.
 

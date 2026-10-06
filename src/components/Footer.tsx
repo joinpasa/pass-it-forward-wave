@@ -15,7 +15,7 @@ const PinterestIcon = ({ size = 18 }: { size?: number }) => (
 );
 
 const Footer = () => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { openShareModal } = useUI();
 
   return (
@@ -86,6 +86,7 @@ const Footer = () => {
               <li><a href="/#story" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{t.footer.ourStory}</a></li>
               <li><a href="/how-it-works" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{t.footer.howItWorks}</a></li>
               <li><a href="/about" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">About</a></li>
+              <li><a href="/science" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{lang === "es" ? "Ciencia" : "Science"}</a></li>
               {/* Partners page is in draft — not linked from footer until it's approved to go live. */}
               <li><a href="/ideas" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{t.footer.ideas}</a></li>
               <li><a href="/wall" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{t.footer.wallOfKindness}</a></li>

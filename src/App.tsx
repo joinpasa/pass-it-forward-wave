@@ -38,6 +38,7 @@ const PrivacyPage = lazy(() => import("./pages/PrivacyPage.tsx"));
 const CommunityGuidelinesPage = lazy(() => import("./pages/CommunityGuidelinesPage.tsx"));
 const ContactPage = lazy(() => import("./pages/ContactPage.tsx"));
 const AboutPage = lazy(() => import("./pages/AboutPage.tsx"));
+const SciencePage = lazy(() => import("./pages/SciencePage.tsx"));
 const PartnersPage = lazy(() => import("./pages/PartnersPage.tsx"));
 const PartnersApplyPage = lazy(() => import("./pages/PartnersApplyPage.tsx"));
 const ProgramsPage = lazy(() => import("./pages/ProgramsPage.tsx"));
@@ -124,6 +125,7 @@ const App = () => (
               <Route path="/community-guidelines" element={<CommunityGuidelinesPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/about" element={<AboutPage />} />
+              <Route path="/science" element={<SciencePage />} />
               <Route path="/partners" element={<PartnersPage />} />
               <Route path="/partners/apply" element={<PartnersApplyPage />} />
               <Route path="/programs" element={<ProgramsPage />} />

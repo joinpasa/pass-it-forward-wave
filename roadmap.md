@@ -1,5 +1,9 @@
 # Roadmap
 
+## Science page
+- [x] Adapt the linked science overview into the site's existing theme, retaining all 12 concept and research links.
+- [x] Add Science to navigation; verify all images, concept links, and sign-in, signup, and password-reset views. Build OK. Not published; account creation and email delivery were not exercised.
+
 ## GitHub code refresh (joinpasa/staging-pasalopalante @ 90720f1) — done
 - [x] Copy apps/website/src, packages/shared/src, public, index.html, tests, docs, supabase/functions into this project (keep local glue: src/integrations/supabase, config.toml, tailwind.config.lov.json, mcp, local migration)
 - [x] Apply all 21 pending DB migrations (adapted old project refs)
