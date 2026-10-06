@@ -38,10 +38,8 @@ const PrivacyPage = lazy(() => import("./pages/PrivacyPage.tsx"));
 const CommunityGuidelinesPage = lazy(() => import("./pages/CommunityGuidelinesPage.tsx"));
 const ContactPage = lazy(() => import("./pages/ContactPage.tsx"));
 const AboutPage = lazy(() => import("./pages/AboutPage.tsx"));
-// Draft — not yet live; see the /partners routes below for why these
-// imports are unused right now.
-// const PartnersPage = lazy(() => import("./pages/PartnersPage.tsx"));
-// const PartnersApplyPage = lazy(() => import("./pages/PartnersApplyPage.tsx"));
+const PartnersPage = lazy(() => import("./pages/PartnersPage.tsx"));
+const PartnersApplyPage = lazy(() => import("./pages/PartnersApplyPage.tsx"));
 const ProgramsPage = lazy(() => import("./pages/ProgramsPage.tsx"));
 const GetInvolvedPage = lazy(() => import("./pages/GetInvolvedPage.tsx"));
 const SchoolsEducatorsPage = lazy(() => import("./pages/SchoolsEducatorsPage.tsx"));
@@ -126,12 +124,8 @@ const App = () => (
               <Route path="/community-guidelines" element={<CommunityGuidelinesPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/about" element={<AboutPage />} />
-              {/* Draft — built and ready, but not yet approved to go live.
-                  Both routes redirect home instead of rendering; the actual
-                  pages (PartnersPage, PartnersApplyPage) are untouched, so
-                  publishing later is just swapping these two lines back. */}
-              <Route path="/partners" element={<Navigate to="/" replace />} />
-              <Route path="/partners/apply" element={<Navigate to="/" replace />} />
+              <Route path="/partners" element={<PartnersPage />} />
+              <Route path="/partners/apply" element={<PartnersApplyPage />} />
               <Route path="/programs" element={<ProgramsPage />} />
               <Route path="/how-it-works" element={<ProgramsPage />} />
               <Route path="/get-involved" element={<GetInvolvedPage />} />
