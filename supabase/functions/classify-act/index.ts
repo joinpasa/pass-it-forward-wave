@@ -11,7 +11,7 @@ type Tag = typeof TAGS[number];
 
 // Config, not a magic number: only tags scoring at or above this are written.
 const CONFIDENCE_THRESHOLD = Number(Deno.env.get("TAG_CONFIDENCE_THRESHOLD") ?? "0.7");
-const CLASSIFIER_MODEL = "google/gemini-3.6-flash";
+const CLASSIFIER_MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-3.6-flash";
 const CALL_TIMEOUT_MS = 15000;
 const MAX_ATTEMPTS = 2; // initial call + one retry, per spec
 
@@ -51,7 +51,7 @@ async function classify(description: string, apiKey: string): Promise<Record<Tag
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), CALL_TIMEOUT_MS);
   try {
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
       signal: controller.signal,
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
@@ -140,27 +140,42 @@ async function classifyOne(
   return true;
 }
 
+// Plain === leaks how many leading bytes matched via response-time
+// differences. Hashing both sides first means the actual compare is always
+// over two fixed-length 32-byte digests, so there's no early-exit signal
+// tied to the secret's real content either way.
+async function secretsMatch(a: string, b: string): Promise<boolean> {
+  const [da, db] = await Promise.all([sha256(a), sha256(b)]);
+  let diff = 0;
+  for (let i = 0; i < da.length; i++) diff |= da[i] ^ db[i];
+  return diff === 0;
+}
+async function sha256(s: string): Promise<Uint8Array> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return new Uint8Array(buf);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
   const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 
   // Internal-only: caller must present the service role key, or the backfill secret.
   const auth = req.headers.get("Authorization") ?? "";
   const backfillSecret = Deno.env.get("CLASSIFY_BACKFILL_SECRET");
   const presentedSecret = req.headers.get("x-backfill-secret") ?? "";
   const authorized =
-    auth === `Bearer ${SERVICE_ROLE}` ||
-    (!!backfillSecret && presentedSecret === backfillSecret);
+    (await secretsMatch(auth, `Bearer ${SERVICE_ROLE}`)) ||
+    (!!backfillSecret && (await secretsMatch(presentedSecret, backfillSecret)));
   if (!authorized) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-  if (!LOVABLE_API_KEY) {
+  if (!GEMINI_API_KEY) {
     return new Response(JSON.stringify({ error: "Classifier unavailable" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -185,7 +200,7 @@ Deno.serve(async (req) => {
 
       let done = 0;
       for (const act of (acts || []) as Array<{ id: string; description: string | null }>) {
-        const ok = await classifyOne(supabase, act, LOVABLE_API_KEY);
+        const ok = await classifyOne(supabase, act, GEMINI_API_KEY);
         if (ok) done++;
         await new Promise((r) => setTimeout(r, 400)); // gentle pacing
       }
@@ -202,10 +217,15 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Matches the backfill path's status filter — an act isn't public yet
+    // (pending/flagged/rejected) shouldn't have its raw description sent to
+    // the classifier or tags written before moderation has actually
+    // approved it.
     const { data: act } = await supabase
       .from("acts_of_kindness")
       .select("id, description")
       .eq("id", actId)
+      .eq("status", "published")
       .maybeSingle();
     if (!act) {
       return new Response(JSON.stringify({ error: "Not found" }), {
@@ -214,7 +234,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const ok = await classifyOne(supabase, act as { id: string; description: string | null }, LOVABLE_API_KEY);
+    const ok = await classifyOne(supabase, act as { id: string; description: string | null }, GEMINI_API_KEY);
     return new Response(JSON.stringify({ classified: ok }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

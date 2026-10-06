@@ -9,6 +9,7 @@ import { smoothScrollTo } from "@shared/lib/smoothScrollTo";
 import SubNav from "@/components/SubNav";
 import LanguageSwitcher from "@shared/components/LanguageSwitcher";
 import { supabase } from "@shared/integrations/supabase/client";
+import { isSatelliteDomain } from "@shared/lib/canonicalDomain";
 
 const SCROLL_THRESHOLD = 80;
 
@@ -19,6 +20,14 @@ const Navbar = () => {
   const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
   const { t } = useLanguage();
   const { user } = useAuth();
+  // On a satellite marketing domain (e.g. passkindnessforward.com), the
+  // session cookie is scoped to pasalopalante.com and never reaches here, so
+  // `user` is always null regardless of whether the visitor is actually
+  // signed in elsewhere. "Sign in" would misleadingly claim they're signed
+  // out; "My Account" makes no claim either way and still links through to
+  // the real account/login page on the canonical domain (via
+  // CanonicalDomainGate), which resolves correctly either way.
+  const signedOutLabel = isSatelliteDomain() ? t.navbar.myAccount : t.navbar.signIn;
   const { anyShareFlowOpen, openShareModal, setNavbarMounted } = useUI();
   const [navStats, setNavStats] = useState<{ acts: number; streak: number }>({ acts: 0, streak: 0 });
   const location = useLocation();
@@ -33,7 +42,7 @@ const Navbar = () => {
     { label: t.navbar.ideas, href: "/ideas" },
     { label: t.mapPage.title, href: "/map" },
     { label: t.navbar.about, href: "/about" },
-    { label: "Partners", href: "/partners" },
+    // Partners page is in draft — not linked from nav until it's approved to go live.
     { label: t.navbar.ourStory, anchor: "story" },
     { label: t.navbar.getInvolved, href: "/get-involved" },
     { label: t.navbar.donateNow, href: "/donate" },
@@ -100,6 +109,12 @@ const Navbar = () => {
       <div className="section-padding flex items-center justify-between h-20 gap-4">
         <Link to="/" className="shrink-0 flex items-center gap-2 md:gap-2.5">
           <img
+            src="/logo-PPL.png"
+            alt="Pásalo Pa'lante"
+            className={`h-10 transition-all duration-300 ${isSolid ? "" : "brightness-0 invert"}`}
+          />
+          <span className={`text-lg font-extralight ${isSolid ? "text-foreground/30" : "text-white/40"}`} aria-hidden="true">×</span>
+          <img
             src={isSolid ? "/logo-PKF-horizontal-color.png" : "/logo-PKF-white-horizontal.png"}
             srcSet={
               isSolid
@@ -108,13 +123,7 @@ const Navbar = () => {
             }
             alt="Pass Kindness Forward"
             title="Pass Kindness Forward"
-            className="h-[60px] w-auto object-contain transition-all duration-300"
-          />
-          <span className={`text-lg font-extralight ${isSolid ? "text-foreground/30" : "text-white/40"}`} aria-hidden="true">×</span>
-          <img
-            src="/logo-PPL.png"
-            alt="Pásalo Pa'lante"
-            className={`h-7 w-auto transition-all duration-300 ${isSolid ? "" : "brightness-0 invert"}`}
+            className="h-10 w-auto object-contain"
           />
         </Link>
 
@@ -201,7 +210,7 @@ const Navbar = () => {
             </Link>
           ) : (
             <Link to="/auth" className={`text-sm font-medium tracking-wide transition-colors duration-300 ${linkClass}`}>
-              {t.navbar.signIn}
+              {signedOutLabel}
             </Link>
           )}
 
@@ -315,7 +324,7 @@ const Navbar = () => {
                 </Link>
               ) : (
                 <Link to="/auth" onClick={() => setMobileOpen(false)} className="text-center text-foreground/70 text-sm">
-                  {t.navbar.signIn}
+                  {signedOutLabel}
                 </Link>
               )}
             </div>

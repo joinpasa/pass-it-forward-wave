@@ -28,12 +28,13 @@ const Footer = () => {
               onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
               className="flex items-center gap-2 mb-3"
             >
-              <img src="/logo-PPL.png" alt="Pásalo Pa'lante" className="h-10 brightness-0 invert cursor-pointer" />
+              <img src="/logo-PPL.png" alt="Pásalo Pa'lante" className="h-10 brightness-0 invert cursor-pointer" loading="lazy" />
               <span className="text-lg font-extralight text-warm-cream/30" aria-hidden="true">×</span>
               <img
-                src="/logo-PKF-white.svg"
+                src="/logo-PKF-white.png"
                 alt="Pass Kindness Forward"
                 className="h-16 w-auto object-contain cursor-pointer"
+                loading="lazy"
               />
             </a>
             <p className="text-warm-cream/50 text-sm leading-relaxed">
@@ -85,7 +86,7 @@ const Footer = () => {
               <li><a href="/#story" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{t.footer.ourStory}</a></li>
               <li><a href="/how-it-works" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{t.footer.howItWorks}</a></li>
               <li><a href="/about" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">About</a></li>
-              <li><a href="/partners" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">Partners</a></li>
+              {/* Partners page is in draft — not linked from footer until it's approved to go live. */}
               <li><a href="/ideas" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{t.footer.ideas}</a></li>
               <li><a href="/wall" className="text-warm-cream/70 hover:text-warm-cream transition-colors text-sm">{t.footer.wallOfKindness}</a></li>
             </ul>

@@ -21,7 +21,7 @@ const REASON_CODES = [
 const STRICT_MODE = true;
 // Below this confidence with any flagged reason → treat as rejected (in STRICT_MODE).
 const CONFIDENCE_THRESHOLD = 0.6;
-const MODERATION_MODEL = "google/gemini-3-flash-preview";
+const MODERATION_MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-3.6-flash";
 
 interface SubmitBody {
   mode: string;
@@ -30,7 +30,12 @@ interface SubmitBody {
   email?: string;
   video_url?: string;
   photo_paths?: string[];
+  to_user_id?: string;
+  act_type?: string;
+  share_on_wall?: boolean;
 }
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function badRequest(msg: string) {
   return new Response(JSON.stringify({ error: msg }), {
@@ -56,10 +61,15 @@ Deno.serve(async (req) => {
     const photoPaths = Array.isArray(body.photo_paths)
       ? body.photo_paths.filter((p) => typeof p === "string").slice(0, 3)
       : [];
+    const actType = (body.act_type ?? "").toString().trim().slice(0, 60) || null;
+    // Defaults to true (matches the Log an Act screen's own toggle default)
+    // when the caller doesn't send it at all — only an explicit `false`
+    // opts an act out of the public Wall.
+    const shareOnWall = body.share_on_wall !== false;
 
     if (videoUrl && !/^https?:\/\//i.test(videoUrl)) return badRequest("Invalid video URL");
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
@@ -72,94 +82,111 @@ Deno.serve(async (req) => {
     let category = "time_services";
     let language = "en";
 
-    if (description && LOVABLE_API_KEY) {
-      const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: MODERATION_MODEL,
-          messages: [
-            {
-              role: "system",
-              content:
-                "You moderate and classify short stories about acts of kindness for a public wall. " +
-                "Reject content that contains hate speech, harassment, threats, sexual content, profanity, " +
-                "personal contact info (phone/email/address), self-harm encouragement, spam, or that is unrelated to kindness. " +
-                "Be strict but fair: positive personal stories about kindness should be approved. " +
-                "Use 'flagged_for_review' only when truly uncertain. Always call moderate_act.",
-            },
-            { role: "user", content: `Mode: ${body.mode}\nStory: ${description}` },
-          ],
-          tools: [
-            {
-              type: "function",
-              function: {
-                name: "moderate_act",
-                description: "Moderate and classify an act of kindness.",
-                parameters: {
-                  type: "object",
-                  properties: {
-                    status: { type: "string", enum: ["approved", "rejected", "flagged_for_review"] },
-                    confidence: { type: "number", description: "0–1 confidence in the status" },
-                    reason_codes: {
-                      type: "array",
-                      items: { type: "string", enum: REASON_CODES },
+    // Whether the moderation call itself could run at all (rate-limited,
+    // out of credits, network failure, ...) — distinct from the model
+    // actually reviewing the content and being uncertain about it. An AI
+    // outage must never mean "everyone's submission just fails"; it holds
+    // the act for manual review instead, same as genuine model uncertainty
+    // does outside STRICT_MODE.
+    let aiUnavailable = false;
+
+    if (description && GEMINI_API_KEY) {
+      try {
+        const aiRes = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${GEMINI_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: MODERATION_MODEL,
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You moderate and classify short stories about acts of kindness for a public wall. " +
+                  "Reject content that contains hate speech, harassment, threats, sexual content, profanity, " +
+                  "personal contact info (phone/email/address), self-harm encouragement, spam, or that is unrelated to kindness. " +
+                  "Be strict but fair: positive personal stories about kindness should be approved. " +
+                  "Use 'flagged_for_review' only when truly uncertain. Always call moderate_act.",
+              },
+              { role: "user", content: `Mode: ${body.mode}\nStory: ${description}` },
+            ],
+            tools: [
+              {
+                type: "function",
+                function: {
+                  name: "moderate_act",
+                  description: "Moderate and classify an act of kindness.",
+                  parameters: {
+                    type: "object",
+                    properties: {
+                      status: { type: "string", enum: ["approved", "rejected", "flagged_for_review"] },
+                      confidence: { type: "number", description: "0–1 confidence in the status" },
+                      reason_codes: {
+                        type: "array",
+                        items: { type: "string", enum: REASON_CODES },
+                      },
+                      short_reason: { type: "string", description: "Brief human-readable reason" },
+                      type_tag: { type: "string", enum: TYPE_TAGS },
+                      category: { type: "string", enum: CATEGORIES },
+                      language: { type: "string", description: "ISO 639-1 code" },
                     },
-                    short_reason: { type: "string", description: "Brief human-readable reason" },
-                    type_tag: { type: "string", enum: TYPE_TAGS },
-                    category: { type: "string", enum: CATEGORIES },
-                    language: { type: "string", description: "ISO 639-1 code" },
+                    required: ["status", "confidence", "reason_codes", "type_tag", "category", "language"],
+                    additionalProperties: false,
                   },
-                  required: ["status", "confidence", "reason_codes", "type_tag", "category", "language"],
-                  additionalProperties: false,
                 },
               },
-            },
-          ],
-          tool_choice: { type: "function", function: { name: "moderate_act" } },
-        }),
-      });
+            ],
+            tool_choice: { type: "function", function: { name: "moderate_act" } },
+          }),
+        });
 
-      if (aiRes.status === 429) {
-        return new Response(JSON.stringify({ error: "Too many requests, please try again in a moment." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (aiRes.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Please contact support." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (aiRes.ok) {
-        const data = await aiRes.json();
-        const args = data.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
-        if (args) {
-          try {
-            const parsed = JSON.parse(args);
-            const s = parsed.status;
-            modStatus = (s === "rejected" || s === "flagged_for_review") ? s : "approved";
-            confidence = typeof parsed.confidence === "number"
-              ? Math.max(0, Math.min(1, parsed.confidence))
-              : 0.5;
-            reasonCodes = Array.isArray(parsed.reason_codes)
-              ? parsed.reason_codes.filter((r: unknown) => typeof r === "string" && REASON_CODES.includes(r as string)).slice(0, 8)
-              : [];
-            shortReason = typeof parsed.short_reason === "string" ? parsed.short_reason.slice(0, 300) : null;
-            typeTag = TYPE_TAGS.includes(parsed.type_tag) ? parsed.type_tag : "other";
-            category = CATEGORIES.includes(parsed.category) ? parsed.category : "time_services";
-            language = (parsed.language || "en").toString().slice(0, 8);
-          } catch (_) { /* fall through */ }
+        if (aiRes.status === 429 || aiRes.status === 402 || !aiRes.ok) {
+          console.error("AI gateway unavailable", aiRes.status, await aiRes.text().catch(() => ""));
+          aiUnavailable = true;
+        } else {
+          const data = await aiRes.json();
+          const args = data.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
+          if (args) {
+            try {
+              const parsed = JSON.parse(args);
+              const s = parsed.status;
+              modStatus = (s === "rejected" || s === "flagged_for_review") ? s : "approved";
+              confidence = typeof parsed.confidence === "number"
+                ? Math.max(0, Math.min(1, parsed.confidence))
+                : 0.5;
+              reasonCodes = Array.isArray(parsed.reason_codes)
+                ? parsed.reason_codes.filter((r: unknown) => typeof r === "string" && REASON_CODES.includes(r as string)).slice(0, 8)
+                : [];
+              shortReason = typeof parsed.short_reason === "string" ? parsed.short_reason.slice(0, 300) : null;
+              typeTag = TYPE_TAGS.includes(parsed.type_tag) ? parsed.type_tag : "other";
+              category = CATEGORIES.includes(parsed.category) ? parsed.category : "time_services";
+              language = (parsed.language || "en").toString().slice(0, 8);
+            } catch (_) {
+              // Response didn't parse as expected — treat the same as the
+              // model being unreachable rather than silently auto-approving.
+              aiUnavailable = true;
+            }
+          } else {
+            aiUnavailable = true;
+          }
         }
-      } else {
-        console.error("AI gateway error", aiRes.status, await aiRes.text());
+      } catch (e) {
+        console.error("AI gateway request failed", e);
+        aiUnavailable = true;
       }
     }
 
-    // Reject-on-uncertainty rule.
-    if (STRICT_MODE) {
+    if (aiUnavailable) {
+      modStatus = "flagged_for_review";
+      shortReason = "Automated moderation was unavailable — held for manual review.";
+    }
+
+    // Reject-on-uncertainty rule — doesn't apply when the AI never actually
+    // reviewed the content (an outage, not model uncertainty); that case is
+    // always held for manual review, never auto-rejected.
+    if (STRICT_MODE && !aiUnavailable) {
       if (modStatus === "flagged_for_review") modStatus = "rejected";
       if (modStatus === "approved" && reasonCodes.length > 0 && confidence < CONFIDENCE_THRESHOLD) {
         modStatus = "rejected";
@@ -177,6 +204,14 @@ Deno.serve(async (req) => {
         userId = u?.user?.id ?? null;
         if (!email && u?.user?.email) email = u.user.email.toLowerCase();
       } catch (_) { /* ignore */ }
+    }
+
+    // to_user_id only ever comes from the /wave hand-off flow: requires a
+    // real signed-in caller, a syntactically valid id, and can't be self.
+    let toUserId: string | null = null;
+    const rawToUserId = (body.to_user_id ?? "").toString().trim();
+    if (userId && rawToUserId && UUID_RE.test(rawToUserId) && rawToUserId !== userId) {
+      toUserId = rawToUserId;
     }
 
     // Resolve display name.
@@ -279,7 +314,12 @@ Deno.serve(async (req) => {
     }
 
     // flagged_for_review (only reachable when STRICT_MODE is false) → stored but not public.
-    const rowStatus = shouldPublish ? "published" : "pending_review";
+    // "pending" is the only non-published value the status check constraint
+    // allows (acts_of_kindness_status_check) — this used to say
+    // "pending_review", a value that was never actually valid; it just never
+    // got exercised until the AI-unavailable fallback above made this branch
+    // reachable for the first time.
+    const rowStatus = shouldPublish ? "published" : "pending";
 
     const { data, error } = await supabase
       .from("acts_of_kindness")
@@ -293,9 +333,12 @@ Deno.serve(async (req) => {
         type_tag: typeTag,
         category,
         language,
+        act_type: actType,
+        share_on_wall: shareOnWall,
         status: rowStatus,
         moderation_reason: shortReason,
         user_id: userId,
+        to_user_id: toUserId,
         ip_address: ipAddress,
         user_agent: userAgent,
         terms_version: termsVersion,
@@ -341,11 +384,45 @@ Deno.serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ act_id: data.id }),
-      }).catch((e) => console.error("classify-act dispatch failed", e));
+      })
+        .then(async (res) => {
+          if (!res.ok) console.error("classify-act dispatch failed", res.status, await res.text());
+        })
+        .catch((e) => console.error("classify-act dispatch failed", e));
       // @ts-ignore EdgeRuntime is available in Supabase Edge Functions
       if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(task);
     } catch (e) {
       console.error("classify-act dispatch error", e);
+    }
+
+    // Refresh this contact's GHL totals (acts + pledges) fire-and-forget —
+    // same dispatch pattern as classify-act above, never blocks the response.
+    if (shouldPublish && email) {
+      try {
+        const task = fetch(`${SUPABASE_URL}/functions/v1/ghl-sync-totals`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${SERVICE_ROLE}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ mode: "user", email }),
+        })
+          // fetch() only rejects on a network-level failure (DNS, connection
+          // refused) - a non-2xx response (missing GHL secrets, a rejected
+          // custom field, an auth mismatch) resolves normally and was
+          // previously invisible here, since nothing checked response.ok.
+          // That silence is exactly why totals could go unsynced for every
+          // contact with no trace anywhere - log the body on failure so a
+          // real cause shows up in this function's logs going forward.
+          .then(async (res) => {
+            if (!res.ok) console.error("ghl-sync-totals dispatch failed", res.status, await res.text());
+          })
+          .catch((e) => console.error("ghl-sync-totals dispatch error", e));
+        // @ts-ignore EdgeRuntime is available in Supabase Edge Functions
+        if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(task);
+      } catch (e) {
+        console.error("ghl-sync-totals dispatch error", e);
+      }
     }
 
     let unlockedBadges: string[] = [];

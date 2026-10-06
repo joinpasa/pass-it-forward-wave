@@ -110,6 +110,40 @@ Deno.serve(async (req) => {
   const now = new Date().toISOString();
   const today = now.split("T")[0];
 
+  // Lifecycle milestones (password set, email verified): tag-only, GHL-only —
+  // no Airtable signup record, and must not touch the contact's other tags.
+  //
+  // These fire on every platform for every user (email-verified fires from
+  // AuthContext on the very first verified session, on both website and
+  // app), which makes this the *first* GHL touch for a lot of contacts —
+  // more often than the "real" signup forms below. Previously this sent
+  // only [formType] as the tag list, so a contact created here (the
+  // ghlAddTags fallback path, when no existing contact is found) got just
+  // "password-set" or "email-verified" and NOTHING else: no PPL2026, no
+  // ppl-website/ppl-app. Always including the base tags here — harmless
+  // no-ops via ghlAddTags' additive POST when the contact already has them —
+  // means every contact ends up with the full PPL2026 + platform tag set
+  // no matter which event happens to touch GHL first.
+  if (formType === "password-set" || formType === "email-verified") {
+    try {
+      const platformTag = data.source === "PPL App" ? "ppl-app" : "ppl-website";
+      const ghlContactId = await ghlAddTags(
+        data.email,
+        ["PPL2026", platformTag, formType],
+        {
+          firstName: data.firstName || "",
+          lastName: data.lastName || "",
+        },
+        undefined,
+        data.source || "PPL Website",
+      );
+      return json({ success: true, ghlContactId });
+    } catch (err) {
+      console.error(`${formType} GHL sync failed:`, err);
+      return json({ error: "Integration failed", detail: (err as Error).message }, 500);
+    }
+  }
+
   // Course Creator form: GHL-only path (no Airtable field mapping yet).
   if (formType === "course-creator") {
     try {
@@ -156,12 +190,17 @@ Deno.serve(async (req) => {
     city:             data.city || null,
     organization:     data.organization || null,
     participant_type: data.participantType || null,
-    form_source:      formType === "pledge" ? "Pledge / Commit" : "Get Involved",
+    form_source:      formSourceLabel(formType),
     pledge_count:     data.pledgeCount ? parseInt(data.pledgeCount) : 0,
     message:          data.message || null,
     signup_date:      now,
   });
 
+  // Airtable and GHL are configured independently (you may have keys for
+  // only one at a time), so each is its own non-fatal try/catch — a missing
+  // or failing provider must never block the other, or the form submission
+  // itself, which has already succeeded by this point.
+  let signupRecordId: string | null = null;
   try {
     const signupRecord = await airtableCreate(
       CONFIG.airtable.signupsTableId,
@@ -173,7 +212,7 @@ Deno.serve(async (req) => {
         [SIGNUP_FIELDS.cityTown]:        data.city || "",
         [SIGNUP_FIELDS.organization]:    data.organization || "",
         [SIGNUP_FIELDS.participantType]: data.participantType || "Individual",
-        [SIGNUP_FIELDS.formSource]:      formType === "pledge" ? "Pledge / Commit" : "Get Involved",
+        [SIGNUP_FIELDS.formSource]:      formSourceLabel(formType),
         [SIGNUP_FIELDS.pledgeCount]:     data.pledgeCount ? parseInt(data.pledgeCount) : null,
         [SIGNUP_FIELDS.message]:         data.message || "",
         [SIGNUP_FIELDS.signupDate]:      now,
@@ -184,32 +223,58 @@ Deno.serve(async (req) => {
         [SIGNUP_FIELDS.ipCountry]:       data.ipCountry || "",
       }
     );
-    const signupRecordId = signupRecord.id;
+    signupRecordId = signupRecord.id;
+  } catch (airtableError) {
+    console.error("Airtable signup create failed (non-fatal):", airtableError);
+  }
 
-    let ghlContactId = null;
+  let ghlContactId: string | null = null;
+  try {
+    ghlContactId = await ghlUpsertContact({
+      firstName:    data.fullName?.split(" ")[0] || "",
+      lastName:     data.fullName?.split(" ").slice(1).join(" ") || "",
+      email:        data.email,
+      phone:        data.phone || "",
+      country:      data.country || "",
+      city:         data.city || "",
+      companyName:  data.organization || "",
+      tags:         buildGHLTags(formType, data),
+      source:       formType === "app-join" ? "PPL App" : "PPL Website",
+      customFields: {
+        participant_type: data.participantType || "Individual",
+        pledge_count:     data.pledgeCount || "",
+        form_source:      formType,
+        utm_source:       data.utm_source || "",
+        utm_campaign:     data.utm_campaign || "",
+        ...pledgeCustomFields(formType, data),
+      },
+    });
+  } catch (ghlError) {
+    console.error("GHL sync failed (non-fatal):", ghlError);
+  }
+
+  // Get Involved category tags (get-involved-lead + individual/school/
+  // nonprofit/company/ambassador) — added on top via the same additive
+  // tagging utility as the email-verified/password-set lifecycle tags, so
+  // they never get clobbered by a later contact update elsewhere.
+  if (ghlContactId && (formType === "pledge" || formType === "get-involved")) {
     try {
-      ghlContactId = await ghlUpsertContact({
-        firstName:    data.fullName?.split(" ")[0] || "",
-        lastName:     data.fullName?.split(" ").slice(1).join(" ") || "",
-        email:        data.email,
-        phone:        data.phone || "",
-        country:      data.country || "",
-        city:         data.city || "",
-        companyName:  data.organization || "",
-        tags:         buildGHLTags(formType, data),
-        source:       "PPL Website",
-        customFields: {
-          participant_type: data.participantType || "Individual",
-          pledge_count:     data.pledgeCount || "",
-          form_source:      formType,
-          utm_source:       data.utm_source || "",
-          utm_campaign:     data.utm_campaign || "",
+      await ghlAddTags(
+        data.email,
+        getInvolvedCategoryTags(formType, data),
+        {
+          firstName: data.fullName?.split(" ")[0] || "",
+          lastName: data.fullName?.split(" ").slice(1).join(" ") || "",
         },
-      });
-    } catch (ghlError) {
-      console.error("GHL sync failed (non-fatal):", ghlError);
+        ghlContactId,
+      );
+    } catch (tagError) {
+      console.error("Get Involved category tag sync failed (non-fatal):", tagError);
     }
+  }
 
+  let contactRecordId: string | null = null;
+  try {
     const contactRecord = await airtableUpsertContact({
       email:           data.email,
       fullName:        data.fullName || "",
@@ -223,25 +288,29 @@ Deno.serve(async (req) => {
       ghlContactId,
       formType,
     });
+    contactRecordId = contactRecord?.id || null;
+  } catch (airtableError) {
+    console.error("Airtable contact upsert failed (non-fatal):", airtableError);
+  }
 
-    if (ghlContactId) {
+  if (ghlContactId && signupRecordId) {
+    try {
       await airtableUpdate(CONFIG.airtable.signupsTableId, signupRecordId, {
         [SIGNUP_FIELDS.ghlContactId]: ghlContactId,
         [SIGNUP_FIELDS.ghlSynced]:    true,
         [SIGNUP_FIELDS.status]:       "Converted to Contact",
       });
+    } catch (airtableError) {
+      console.error("Airtable status update failed (non-fatal):", airtableError);
     }
-
-    return json({
-      success: true,
-      signupRecordId,
-      contactRecordId: contactRecord?.id || null,
-      ghlContactId,
-    });
-  } catch (err) {
-    console.error("Integration error:", err);
-    return json({ error: "Integration failed", detail: (err as Error).message }, 500);
   }
+
+  return json({
+    success: true,
+    signupRecordId,
+    contactRecordId,
+    ghlContactId,
+  });
 });
 
 const AIRTABLE_WEBHOOK_URL =
@@ -308,7 +377,7 @@ async function airtableUpsertContact({ email, fullName, phone, country, city,
 }) {
   const searchRes = await fetch(
     `https://api.airtable.com/v0/${CONFIG.airtable.baseId}/${CONFIG.airtable.contactsTableId}` +
-    `?filterByFormula=${encodeURIComponent(`{Email}="${email}"`)}`,
+    `?returnFieldsByFieldId=true&filterByFormula=${encodeURIComponent(`{Email}="${email}"`)}`,
     { headers: { Authorization: `Bearer ${CONFIG.airtable.apiKey}` } }
   );
   const searchData = await searchRes.json();
@@ -378,7 +447,6 @@ async function ghlUpsertContact(contact: {
     email:       contact.email,
     companyName: contact.companyName,
     source:      contact.source,
-    locationId:  CONFIG.ghl.locationId,
     tags:        contact.tags,
     customFields: Object.entries(contact.customFields || {}).map(([key, value]) => ({
       key, field_value: String(value),
@@ -390,6 +458,10 @@ async function ghlUpsertContact(contact: {
   if (iso2) payload.country = iso2;
 
   if (existing) {
+    // locationId is create-only — GHL's update endpoint rejects it
+    // ("property locationId should not exist"), which was silently
+    // failing every update-path sync (e.g. password-set) that went
+    // through this function.
     const updateRes = await fetch(
       `${CONFIG.ghl.baseUrl}/contacts/${existing.id}`,
       {
@@ -404,12 +476,84 @@ async function ghlUpsertContact(contact: {
     const createRes = await fetch(`${CONFIG.ghl.baseUrl}/contacts/`, {
       method: "POST",
       headers,
+      body: JSON.stringify({ ...payload, locationId: CONFIG.ghl.locationId }),
+    });
+    if (createRes.ok) {
+      const created = await createRes.json();
+      return created.contact?.id;
+    }
+
+    // GHL's contact search can lag just behind a contact it created moments
+    // earlier (e.g. website-signup and email-verified firing back-to-back
+    // for the same email) - the search above then misses it, we try to
+    // create a duplicate, and GHL rejects it. Its error conveniently names
+    // the existing contact's id, so update that one instead of failing.
+    const errBody = await createRes.text();
+    let dupeId: string | undefined;
+    try {
+      dupeId = JSON.parse(errBody)?.meta?.contactId;
+    } catch { /* not JSON - fall through to throw below */ }
+    if (!dupeId) throw new Error(`GHL create failed: ${errBody}`);
+
+    const retryRes = await fetch(`${CONFIG.ghl.baseUrl}/contacts/${dupeId}`, {
+      method: "PUT",
+      headers,
       body: JSON.stringify(payload),
     });
-    if (!createRes.ok) throw new Error(`GHL create failed: ${await createRes.text()}`);
-    const created = await createRes.json();
-    return created.contact?.id;
+    if (!retryRes.ok) throw new Error(`GHL update (after duplicate) failed: ${await retryRes.text()}`);
+    return dupeId;
   }
+}
+
+// Adds tags to an existing contact without touching its other tags or
+// fields — unlike ghlUpsertContact, whose PUT replaces the entire tags
+// array. Falls back to creating a bare contact with just these tags if no
+// match is found, so a lifecycle event never gets silently dropped.
+// Pass knownContactId when the caller already resolved one (e.g. right
+// after ghlUpsertContact) to skip the redundant search lookup.
+async function ghlAddTags(
+  email: string,
+  tags: string[],
+  fallbackName: { firstName: string; lastName: string },
+  knownContactId?: string,
+  fallbackSource: string = "PPL Website",
+): Promise<string | undefined> {
+  const headers = {
+    Authorization: `Bearer ${CONFIG.ghl.apiKey}`,
+    "Content-Type": "application/json",
+    Version: "2021-07-28",
+  };
+
+  let contactId = knownContactId;
+  if (!contactId) {
+    const searchRes = await fetch(
+      `${CONFIG.ghl.baseUrl}/contacts/search?email=${encodeURIComponent(email)}&locationId=${CONFIG.ghl.locationId}`,
+      { headers }
+    );
+    const searchData = await searchRes.json();
+    const existing = searchData.contacts?.[0];
+
+    if (!existing) {
+      // This fallback used to hardcode "PPL App" regardless of which
+      // platform actually triggered it — every email-verified/password-set
+      // sync for a brand-new contact (the common case, since these lifecycle
+      // events are usually the *first* GHL touch for an email) got mislabeled.
+      return ghlUpsertContact({
+        ...fallbackName,
+        email, phone: "", country: "", city: "", companyName: "",
+        tags, source: fallbackSource, customFields: {},
+      });
+    }
+    contactId = existing.id;
+  }
+
+  const res = await fetch(`${CONFIG.ghl.baseUrl}/contacts/${contactId}/tags`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ tags }),
+  });
+  if (!res.ok) throw new Error(`GHL add-tags failed: ${await res.text()}`);
+  return contactId;
 }
 
 // GHL expects an ISO 3166-1 alpha-2 country code. Map English country names to
@@ -435,13 +579,81 @@ function toIso2(input: string): string {
   return ISO2_BY_NAME[value.toLowerCase()] || "";
 }
 
+// Labels shown in Airtable's Signups/Contacts "Form Source" field. Keep in
+// sync with buildGHLTags below — both exist so GHL automations and Airtable
+// views can branch on exactly which surface a signup came from.
+const FORM_SOURCE_LABELS: Record<string, string> = {
+  pledge: "Pledge / Commit",
+  "get-involved": "Get Involved",
+  "app-join": "App Join",
+  "website-signup": "Website Signup",
+};
+
+function formSourceLabel(formType: string): string {
+  return FORM_SOURCE_LABELS[formType] ?? "Get Involved";
+}
+
 function buildGHLTags(formType: string, data: Record<string, string>) {
-  const tags = ["PPL2026", "ppl-website"];
+  const tags = ["PPL2026", formType === "app-join" ? "ppl-app" : "ppl-website"];
   if (formType === "pledge") tags.push("pledged");
   if (formType === "get-involved") tags.push("get-involved");
+  if (formType === "app-join") tags.push("app-join");
   if (data.participantType) tags.push(data.participantType.toLowerCase().replace(" ", "-"));
   if (data.country === "Puerto Rico" || data.country === "PR") tags.push("puerto-rico");
   return tags;
+}
+
+// Organization types that map to a distinct GHL segment. "ngo" is folded
+// into "nonprofit" (same audience).
+const ORG_TYPE_CATEGORY_TAG: Record<string, string> = {
+  school: "get-involved-school",
+  company: "get-involved-company",
+  nonprofit: "get-involved-nonprofit",
+  ngo: "get-involved-nonprofit",
+  municipality: "get-involved-municipality",
+  faith: "get-involved-faith",
+  other: "get-involved-other",
+};
+
+// Category + general lead tags for the two Get Involved forms (the /commit
+// pledge form and the "Join as an Ambassador" modal). Applied additively via
+// ghlAddTags, never through ghlUpsertContact's tags-replacing payload, so
+// they survive whatever else later touches this contact's other tags.
+function getInvolvedCategoryTags(formType: string, data: Record<string, string>): string[] {
+  const tags = ["get-involved-lead"];
+
+  if (formType === "pledge") {
+    if (data.mode === "individual") tags.push("get-involved-individual");
+    if (data.mode === "organization") {
+      // General tag so a group/org pledge is always distinguishable from an
+      // individual one, on top of the specific type tag below.
+      tags.push("get-involved-group");
+      const orgTag = ORG_TYPE_CATEGORY_TAG[(data.orgType || "").toLowerCase()];
+      if (orgTag) tags.push(orgTag);
+    }
+    if (data.helpRole === "ambassador") tags.push("get-involved-ambassador");
+  } else if (formType === "get-involved") {
+    const participantType = (data.participantType || "").toLowerCase();
+    if (participantType === "ambassador") tags.push("get-involved-ambassador");
+    if (participantType === "individual") tags.push("get-involved-individual");
+  }
+
+  return tags;
+}
+
+// GHL's "Pledge" ({{contact.pledge}}) and "Commitment" ({{contact.commitment}})
+// fields are kept separate so one doesn't silently overwrite the other:
+// the initial pledge (the /commit form, or the app's pre-verification join)
+// goes to "pledge"; the number chosen during the post-signup onboarding
+// carousel (AccountPage/AppHome finishOnboarding, formType "pledge" with
+// pledgeContext "onboarding") goes to "commitment" instead.
+function pledgeCustomFields(formType: string, data: Record<string, unknown>) {
+  if (formType !== "pledge" && formType !== "app-join") return {};
+  const count = (data.pledgeCount as string | number | undefined) || "";
+  if (formType === "pledge" && data.pledgeContext === "onboarding") {
+    return { commitment: count };
+  }
+  return { pledge: count };
 }
 
 function json(data: unknown, status = 200) {

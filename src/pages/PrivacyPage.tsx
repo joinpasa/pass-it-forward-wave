@@ -43,7 +43,7 @@ export default function PrivacyPage() {
             <p className="text-sm text-foreground/60 mt-3">
               {t("Effective Date: June 17, 2026", "Fecha de vigencia: 17 de junio de 2026")}
               {" · "}
-              {t("Last Updated: September 26, 2026", "Última actualización: 26 de septiembre de 2026")}
+              {t("Last Updated: June 17, 2026", "Última actualización: 17 de junio de 2026")}
             </p>
             <div className="mt-4 text-sm text-foreground/70 space-y-1">
               <p>
@@ -204,30 +204,15 @@ export default function PrivacyPage() {
                 <li>{t("Country", "País")}</li>
                 <li>{t("Organization or institutional affiliation (where applicable)", "Nombre de la organización o institución (cuando corresponda)")}</li>
               </ul>
-              <p>
-                {t(
-                  "This information is stored and managed through GoHighLevel (GHL), a customer relationship management (CRM) platform used by Te Amo PR.",
-                  "Esta información se almacena y gestiona a través de GoHighLevel (GHL), una plataforma de gestión de relaciones con contactos (CRM) utilizada por Te Amo PR."
-                )}
-              </p>
+              <p>{t("This information is stored and managed through GoHighLevel (GHL), a customer relationship management (CRM) platform used by Te Amo PR.", "Esta información se almacena y gestiona a través de GoHighLevel (GHL), una plataforma de gestión de relaciones con contactos (CRM) utilizada por Te Amo PR.")}</p>
               <p>{t("Information collected through the Chatbot may be used to:", "La información recopilada a través del Chatbot puede utilizarse para:")}</p>
               <ul className="list-disc pl-6 space-y-1">
                 <li>{t("Respond to your questions and requests", "Responder sus preguntas y solicitudes")}</li>
                 <li>{t("Send you onboarding materials and follow-up communications related to Pass Kindness Forward", "Enviarle materiales de incorporación y comunicaciones de seguimiento relacionadas con Pass Kindness Forward")}</li>
                 <li>{t("Track your participation interest and status within the movement", "Dar seguimiento a su interés y estado de participación en el movimiento")}</li>
               </ul>
-              <p>
-                {t(
-                  "Email addresses collected through the Chatbot will not be used for newsletters, marketing campaigns, or promotional communications unrelated to Pass Kindness Forward.",
-                  "Las direcciones de correo electrónico recopiladas a través del Chatbot no se utilizarán para newsletters, campañas de marketing ni comunicaciones promocionales no relacionadas con Pass Kindness Forward."
-                )}
-              </p>
-              <p>
-                {t(
-                  "Conversations held through the Chatbot are stored on the Marketing Hub AI Agent platform. Contact data is retained in GoHighLevel (GHL) for as long as reasonably necessary to fulfill the purposes described in this Policy.",
-                  "Las conversaciones realizadas a través del Chatbot se almacenan en la plataforma Marketing Hub AI Agent. Los datos de contacto se conservan en GoHighLevel (GHL) durante el tiempo que sea razonablemente necesario para cumplir con los propósitos descritos en esta Política."
-                )}
-              </p>
+              <p>{t("Email addresses collected through the Chatbot will not be used for newsletters, marketing campaigns, or promotional communications unrelated to Pass Kindness Forward.", "Las direcciones de correo electrónico recopiladas a través del Chatbot no se utilizarán para newsletters, campañas de marketing ni comunicaciones promocionales no relacionadas con Pass Kindness Forward.")}</p>
+              <p>{t("Conversations held through the Chatbot are stored on the Marketing Hub AI Agent platform. Contact data is retained in GoHighLevel (GHL) for as long as reasonably necessary to fulfill the purposes described in this Policy.", "Las conversaciones realizadas a través del Chatbot se almacenan en la plataforma Marketing Hub AI Agent. Los datos de contacto se conservan en GoHighLevel (GHL) durante el tiempo que sea razonablemente necesario para cumplir con los propósitos descritos en esta Política.")}</p>
             </Section>
 
             <Section n={9} title={t("Cookies and Analytics", "Cookies y analíticas")}>

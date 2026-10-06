@@ -13,7 +13,7 @@ const TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const TTL_SECONDS = TTL_MS / 1000;
 
 /** The public site people should land on, regardless of where we're rendering. */
-export const PUBLIC_SITE_URL = "https://passkindnessforward.com";
+export const PUBLIC_SITE_URL = "https://pasalopalante.com";
 
 /**
  * Origin to use when building links handed to a human. Preview/staging hosts
