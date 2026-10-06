@@ -48,6 +48,7 @@ export type Database = {
       }
       acts_of_kindness: {
         Row: {
+          act_type: string | null
           category: string | null
           classified_at: string | null
           community_guidelines_version: string | null
@@ -62,6 +63,7 @@ export type Database = {
           moderation_reason: string | null
           photo_paths: string[]
           privacy_version: string | null
+          share_on_wall: boolean
           status: string
           tag_confidence: Json | null
           tags: string[] | null
@@ -73,6 +75,7 @@ export type Database = {
           video_url: string | null
         }
         Insert: {
+          act_type?: string | null
           category?: string | null
           classified_at?: string | null
           community_guidelines_version?: string | null
@@ -87,6 +90,7 @@ export type Database = {
           moderation_reason?: string | null
           photo_paths?: string[]
           privacy_version?: string | null
+          share_on_wall?: boolean
           status?: string
           tag_confidence?: Json | null
           tags?: string[] | null
@@ -98,6 +102,7 @@ export type Database = {
           video_url?: string | null
         }
         Update: {
+          act_type?: string | null
           category?: string | null
           classified_at?: string | null
           community_guidelines_version?: string | null
@@ -112,6 +117,7 @@ export type Database = {
           moderation_reason?: string | null
           photo_paths?: string[]
           privacy_version?: string | null
+          share_on_wall?: boolean
           status?: string
           tag_confidence?: Json | null
           tags?: string[] | null
@@ -190,6 +196,7 @@ export type Database = {
           org_name: string | null
           org_type: string | null
           org_website: string | null
+          phone: string | null
           pledge_count: number
           status: string
           type: string
@@ -209,6 +216,7 @@ export type Database = {
           org_name?: string | null
           org_type?: string | null
           org_website?: string | null
+          phone?: string | null
           pledge_count?: number
           status?: string
           type: string
@@ -228,6 +236,7 @@ export type Database = {
           org_name?: string | null
           org_type?: string | null
           org_website?: string | null
+          phone?: string | null
           pledge_count?: number
           status?: string
           type?: string
@@ -295,29 +304,38 @@ export type Database = {
       email_send_state: {
         Row: {
           auth_email_ttl_minutes: number
+          auth_retry_after_until: string | null
           batch_size: number
           id: number
+          last_rate_limit_alert_at: string | null
           retry_after_until: string | null
           send_delay_ms: number
           transactional_email_ttl_minutes: number
+          transactional_retry_after_until: string | null
           updated_at: string
         }
         Insert: {
           auth_email_ttl_minutes?: number
+          auth_retry_after_until?: string | null
           batch_size?: number
           id?: number
+          last_rate_limit_alert_at?: string | null
           retry_after_until?: string | null
           send_delay_ms?: number
           transactional_email_ttl_minutes?: number
+          transactional_retry_after_until?: string | null
           updated_at?: string
         }
         Update: {
           auth_email_ttl_minutes?: number
+          auth_retry_after_until?: string | null
           batch_size?: number
           id?: number
+          last_rate_limit_alert_at?: string | null
           retry_after_until?: string | null
           send_delay_ms?: number
           transactional_email_ttl_minutes?: number
+          transactional_retry_after_until?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -525,6 +543,24 @@ export type Database = {
         }
         Relationships: []
       }
+      photo_upload_log: {
+        Row: {
+          created_at: string
+          id: number
+          ip_address: string
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          ip_address: string
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          ip_address?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -552,6 +588,7 @@ export type Database = {
           terms_major_accepted: number | null
           terms_version_accepted: string | null
           timezone: string | null
+          tour_seen: boolean
           updated_at: string
           user_id: string
         }
@@ -581,6 +618,7 @@ export type Database = {
           terms_major_accepted?: number | null
           terms_version_accepted?: string | null
           timezone?: string | null
+          tour_seen?: boolean
           updated_at?: string
           user_id: string
         }
@@ -610,6 +648,7 @@ export type Database = {
           terms_major_accepted?: number | null
           terms_version_accepted?: string | null
           timezone?: string | null
+          tour_seen?: boolean
           updated_at?: string
           user_id?: string
         }
@@ -746,6 +785,35 @@ export type Database = {
           },
         ]
       }
+      translation_cache: {
+        Row: {
+          act_id: string
+          created_at: string
+          target_lang: string
+          translation: string
+        }
+        Insert: {
+          act_id: string
+          created_at?: string
+          target_lang: string
+          translation: string
+        }
+        Update: {
+          act_id?: string
+          created_at?: string
+          target_lang?: string
+          translation?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "translation_cache_act_id_fkey"
+            columns: ["act_id"]
+            isOneToOne: false
+            referencedRelation: "acts_of_kindness"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_badges: {
         Row: {
           badge_id: string
@@ -869,6 +937,14 @@ export type Database = {
           earned_badge_id: string
         }[]
       }
+      check_and_log_photo_upload: {
+        Args: {
+          _ip_address: string
+          _max_requests: number
+          _window_minutes: number
+        }
+        Returns: boolean
+      }
       claim_my_acts: { Args: never; Returns: number }
       claim_referral: { Args: { _code: string }; Returns: boolean }
       compute_public_name: {
@@ -890,6 +966,21 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      ghl_totals_by_email: {
+        Args: { _limit?: number; _offset?: number }
+        Returns: {
+          acts_count: number
+          email: string
+          pledge_total: number
+        }[]
+      }
+      ghl_totals_for_email: {
+        Args: { _email: string }
+        Returns: {
+          acts_count: number
+          pledge_total: number
+        }[]
       }
       has_role: {
         Args: {
@@ -923,6 +1014,7 @@ export type Database = {
         Returns: {
           from_name: string
           from_user_id: string
+          is_self: boolean
         }[]
       }
       move_to_dlq: {
@@ -934,6 +1026,17 @@ export type Database = {
         }
         Returns: number
       }
+      my_connections: {
+        Args: never
+        Returns: {
+          connected_at: string
+          country: string
+          direction: string
+          name: string
+          user_id: string
+        }[]
+      }
+      my_longest_chain: { Args: never; Returns: number }
       my_reactions: {
         Args: { _act_ids: string[] }
         Returns: {
@@ -948,6 +1051,7 @@ export type Database = {
           pledge_total: number
         }[]
       }
+      notify_email_queue_processor: { Args: never; Returns: undefined }
       org_stats: {
         Args: { _org_id: string }
         Returns: {
