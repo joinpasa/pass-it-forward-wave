@@ -18,7 +18,7 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [exploreOpen, setExploreOpen] = useState(false);
   const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { user } = useAuth();
   // On a satellite marketing domain (e.g. passkindnessforward.com), the
   // session cookie is scoped to pasalopalante.com and never reaches here, so
@@ -42,6 +42,7 @@ const Navbar = () => {
     { label: t.navbar.ideas, href: "/ideas" },
     { label: t.mapPage.title, href: "/map" },
     { label: t.navbar.about, href: "/about" },
+    { label: lang === "es" ? "Ciencia" : "Science", href: "/science" },
     // Partners page is in draft — not linked from nav until it's approved to go live.
     { label: t.navbar.ourStory, anchor: "story" },
     { label: t.navbar.getInvolved, href: "/get-involved" },
