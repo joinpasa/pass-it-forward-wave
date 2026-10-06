@@ -5,11 +5,7 @@
 "blocks": [
 [
 "label",
-"ESTABLISHED EVIDENCE"
-],
-[
-"label",
-"EMERGING RESEARCH"
+"ESTABLISHED EVIDENCE · EMERGING RESEARCH"
 ],
 [
 "p",
@@ -81,11 +77,7 @@
 ],
 [
 "label",
-"REACTIVE STATE"
-],
-[
-"label",
-"COHERENT STATE"
+"REACTIVE STATE · COHERENT STATE"
 ],
 [
 "p",
@@ -105,19 +97,7 @@
 ],
 [
 "label",
-"PERSON"
-],
-[
-"label",
-"PAIR"
-],
-[
-"label",
-"GROUP"
-],
-[
-"label",
-"COMMUNITY"
+"PERSON · PAIR · GROUP · COMMUNITY"
 ],
 [
 "p",
@@ -169,11 +149,7 @@
 ],
 [
 "label",
-"AUTONOMIC NERVOUS SYSTEM"
-],
-[
-"label",
-"HEART-RHYTHM PATTERN"
+"AUTONOMIC NERVOUS SYSTEM · HEART-RHYTHM PATTERN"
 ],
 [
 "label",
@@ -299,11 +275,7 @@
 ],
 [
 "label",
-"MEASURABLE DEVIATION"
-],
-[
-"label",
-"THE EXPERIMENT"
+"MEASURABLE DEVIATION · THE EXPERIMENT"
 ],
 [
 "heading",
@@ -383,15 +355,7 @@
 ],
 [
 "label",
-"STATE 1: EXPECTED VARIANCE"
-],
-[
-"label",
-"STATE 2: ANOMALOUS SHIFT"
-],
-[
-"label",
-"THE REPORTED RESULT"
+"STATE 1: EXPECTED VARIANCE · STATE 2: ANOMALOUS SHIFT · THE REPORTED RESULT"
 ],
 [
 "heading",
@@ -403,11 +367,7 @@
 ],
 [
 "label",
-"HUNDREDS"
-],
-[
-"label",
-"OF FORMAL EVENTS"
+"HUNDREDS · OF FORMAL EVENTS"
 ],
 [
 "p",
@@ -415,11 +375,7 @@
 ],
 [
 "label",
-"PROSPECTIVE"
-],
-[
-"label",
-"RIGOROUS METHODOLOGY"
+"PROSPECTIVE · RIGOROUS METHODOLOGY"
 ],
 [
 "p",
@@ -427,11 +383,7 @@
 ],
 [
 "label",
-"CUMULATIVE"
-],
-[
-"label",
-"STATISTICAL DEVIATION"
+"CUMULATIVE · STATISTICAL DEVIATION"
 ],
 [
 "p",
@@ -523,19 +475,7 @@
 ],
 [
 "label",
-"NETWORK COHERENCE CHART"
-],
-[
-"label",
-"T-STAT DEVIATION"
-],
-[
-"label",
-"GCP 2.0 NETWORK MAP"
-],
-[
-"label",
-"EXTREME (PR)"
+"NETWORK COHERENCE CHART · T-STAT DEVIATION · GCP 2.0 NETWORK MAP · EXTREME (PR)"
 ],
 [
 "quote",
@@ -543,11 +483,7 @@
 ],
 [
 "label",
-"— GCP 2.0 PRIMARY DATA LOG"
-],
-[
-"label",
-"RIGOROUS METHODOLOGY"
+"— GCP 2.0 PRIMARY DATA LOG · RIGOROUS METHODOLOGY"
 ],
 [
 "heading",
@@ -623,11 +559,7 @@
 ],
 [
 "label",
-"WHAT REMAINS OPEN"
-],
-[
-"label",
-"WHY?"
+"WHAT REMAINS OPEN · WHY?"
 ],
 [
 "p",
@@ -875,11 +807,7 @@
 ],
 [
 "label",
-"PASS KINDNESS FORWARD"
-],
-[
-"label",
-"QUICK LINKS"
+"PASS KINDNESS FORWARD · QUICK LINKS"
 ],
 [
 "heading",
@@ -913,15 +841,7 @@
 ],
 [
 "label",
-"VOLTAGE"
-],
-[
-"label",
-"TIME →"
-],
-[
-"label",
-"INTERVENTION PHASE"
+"VOLTAGE · TIME → · INTERVENTION PHASE"
 ],
 [
 "p",
@@ -969,23 +889,7 @@
 ],
 [
 "label",
-"ONE PERSON"
-],
-[
-"label",
-"380 PEOPLE"
-],
-[
-"label",
-"ONE SHARED STATE"
-],
-[
-"label",
-"ONE SHARED TARGET"
-],
-[
-"label",
-"MEASURABLE RESPONSE?"
+"ONE PERSON · 380 PEOPLE · ONE SHARED STATE · ONE SHARED TARGET · MEASURABLE RESPONSE?"
 ],
 [
 "p",
@@ -1021,11 +925,7 @@
 ],
 [
 "label",
-"BASELINE STATE"
-],
-[
-"label",
-"(CONTROL)"
+"BASELINE STATE · (CONTROL)"
 ],
 [
 "heading",
@@ -1033,11 +933,7 @@
 ],
 [
 "label",
-"DIRECTED ATTENTION"
-],
-[
-"label",
-"(INTERVENTION)"
+"DIRECTED ATTENTION · (INTERVENTION)"
 ],
 [
 "heading",
@@ -1463,43 +1359,7 @@
 ],
 [
 "label",
-"SMALL"
-],
-[
-"label",
-"GROUP"
-],
-[
-"label",
-"SHARED"
-],
-[
-"label",
-"PRACTICE"
-],
-[
-"label",
-"DEFINED"
-],
-[
-"label",
-"COMMUNITY"
-],
-[
-"label",
-"MEASURABLE"
-],
-[
-"label",
-"OUTCOMES"
-],
-[
-"label",
-"STATISTICAL"
-],
-[
-"label",
-"TEST"
+"SMALL · GROUP · SHARED · PRACTICE · DEFINED · COMMUNITY · MEASURABLE · OUTCOMES · STATISTICAL · TEST"
 ],
 [
 "p",
@@ -1535,15 +1395,7 @@
 ],
 [
 "label",
-"BASELINE"
-],
-[
-"label",
-"MEDITATION"
-],
-[
-"label",
-"OUTCOME"
+"BASELINE · MEDITATION · OUTCOME"
 ],
 [
 "p",
@@ -1607,11 +1459,7 @@
 ],
 [
 "label",
-"ISOLATED"
-],
-[
-"label",
-"PARTICIPATION"
+"ISOLATED · PARTICIPATION"
 ],
 [
 "heading",
@@ -1619,11 +1467,7 @@
 ],
 [
 "label",
-"ISOLATED"
-],
-[
-"label",
-"PARTICIPATION"
+"ISOLATED · PARTICIPATION"
 ],
 [
 "heading",
@@ -1631,23 +1475,7 @@
 ],
 [
 "label",
-"ISOLATED"
-],
-[
-"label",
-"PARTICIPATION"
-],
-[
-"label",
-"= LINEAR ADDITION"
-],
-[
-"label",
-"SYNCHRONIZED"
-],
-[
-"label",
-"PARTICIPATION"
+"ISOLATED · PARTICIPATION · = LINEAR ADDITION · SYNCHRONIZED · PARTICIPATION"
 ],
 [
 "heading",
@@ -1655,11 +1483,7 @@
 ],
 [
 "label",
-"SHARED"
-],
-[
-"label",
-"TIMING"
+"SHARED · TIMING"
 ],
 [
 "heading",
@@ -1667,11 +1491,7 @@
 ],
 [
 "label",
-"SHARED"
-],
-[
-"label",
-"INTENTION"
+"SHARED · INTENTION"
 ],
 [
 "label",
@@ -2061,11 +1881,7 @@
 ],
 [
 "label",
-"1.14M"
-],
-[
-"label",
-"ACTS LOGGED"
+"1.14M · ACTS LOGGED"
 ],
 [
 "heading",
@@ -2081,11 +1897,7 @@
 ],
 [
 "label",
-"STUDENTS"
-],
-[
-"label",
-"PUERTO RICO • 2025"
+"STUDENTS · PUERTO RICO • 2025"
 ],
 [
 "p",
@@ -2233,11 +2045,7 @@
 ],
 [
 "label",
-"COORDINATED"
-],
-[
-"label",
-"KINDNESS"
+"COORDINATED · KINDNESS"
 ],
 [
 "heading",
@@ -2477,27 +2285,7 @@
 ],
 [
 "label",
-"PR"
-],
-[
-"label",
-"PUERTO RICO"
-],
-[
-"label",
-"MC"
-],
-[
-"label",
-"MULTIPLE COUNTRIES"
-],
-[
-"label",
-"GS"
-],
-[
-"label",
-"GLOBAL SYNC"
+"PR · PUERTO RICO · MC · MULTIPLE COUNTRIES · GS · GLOBAL SYNC"
 ],
 [
 "p",
@@ -2513,11 +2301,7 @@
 ],
 [
 "label",
-"ONE PERSON CAN ACT."
-],
-[
-"label",
-"AN ENTIRE ISLAND CAN ACT."
+"ONE PERSON CAN ACT. · AN ENTIRE ISLAND CAN ACT."
 ],
 [
 "label",
@@ -2541,27 +2325,7 @@
 ],
 [
 "label",
-"ONE ACT"
-],
-[
-"label",
-"VISIBLE PARTICIPATION"
-],
-[
-"label",
-"GROWING ADOPTION"
-],
-[
-"label",
-"CRITICAL MASS"
-],
-[
-"label",
-"SOCIAL NORM"
-],
-[
-"label",
-"VERIFICATION"
+"ONE ACT · VISIBLE PARTICIPATION · GROWING ADOPTION · CRITICAL MASS · SOCIAL NORM · VERIFICATION"
 ],
 [
 "heading",
@@ -2651,19 +2415,7 @@
 ],
 [
 "label",
-"INDIVIDUAL"
-],
-[
-"label",
-"CRITICAL MASS"
-],
-[
-"label",
-"CULTURE"
-],
-[
-"label",
-"GROWTH MODELS"
+"INDIVIDUAL · CRITICAL MASS · CULTURE · GROWTH MODELS"
 ],
 [
 "p",
@@ -2991,19 +2743,7 @@
 ],
 [
 "label",
-"DIFFUSE SIGNAL"
-],
-[
-"label",
-"VS"
-],
-[
-"label",
-"SYNCHRONIZED SIGNAL"
-],
-[
-"label",
-"PARTICIPATION"
+"DIFFUSE SIGNAL · VS · SYNCHRONIZED SIGNAL · PARTICIPATION"
 ],
 [
 "heading",
@@ -3019,15 +2759,7 @@
 ],
 [
 "label",
-"SYNCHRONIZATION"
-],
-[
-"label",
-"= A STRONGER SOCIAL SIGNAL"
-],
-[
-"label",
-"CASE STUDY: PUERTO RICO"
+"SYNCHRONIZATION · = A STRONGER SOCIAL SIGNAL · CASE STUDY: PUERTO RICO"
 ],
 [
 "p",
@@ -3207,19 +2939,7 @@
 ],
 [
 "label",
-"ONE PERSON CAN BEGIN."
-],
-[
-"label",
-"A FEW CAN SYNCHRONIZE."
-],
-[
-"label",
-"A NETWORK CAN TIP."
-],
-[
-"label",
-"CULTURE CAN MOVE."
+"ONE PERSON CAN BEGIN. · A FEW CAN SYNCHRONIZE. · A NETWORK CAN TIP. · CULTURE CAN MOVE."
 ],
 [
 "p",
@@ -3275,11 +2995,7 @@
 ],
 [
 "label",
-"A NETWORK"
-],
-[
-"label",
-"ESTABLISHED CLAIMS"
+"A NETWORK · ESTABLISHED CLAIMS"
 ],
 [
 "heading",
@@ -3425,19 +3141,7 @@
 ],
 [
 "label",
-"WIDER NETWORK"
-],
-[
-"label",
-"CONNECTIONS OF CONNECTIONS"
-],
-[
-"label",
-"IMMEDIATE CONNECTIONS"
-],
-[
-"label",
-"DIRECTLY INVOLVED"
+"WIDER NETWORK · CONNECTIONS OF CONNECTIONS · IMMEDIATE CONNECTIONS · DIRECTLY INVOLVED"
 ],
 [
 "heading",
@@ -3457,11 +3161,7 @@
 ],
 [
 "label",
-"GIVER"
-],
-[
-"label",
-"RECEIVER"
+"GIVER · RECEIVER"
 ],
 [
 "heading",
@@ -3473,19 +3173,7 @@
 ],
 [
 "label",
-"GIVER"
-],
-[
-"label",
-"RECEIVER"
-],
-[
-"label",
-"OBSERVER"
-],
-[
-"label",
-"OBSERVER"
+"GIVER · RECEIVER · OBSERVER · OBSERVER"
 ],
 [
 "heading",
@@ -3513,19 +3201,7 @@
 ],
 [
 "label",
-"SEE KINDNESS"
-],
-[
-"label",
-"SEE IT AGAIN"
-],
-[
-"label",
-"SEE MANY PEOPLE DOING IT"
-],
-[
-"label",
-"EXPECTATIONS BEGIN TO SHIFT"
+"SEE KINDNESS · SEE IT AGAIN · SEE MANY PEOPLE DOING IT · EXPECTATIONS BEGIN TO SHIFT"
 ],
 [
 "label",
@@ -3589,19 +3265,7 @@
 ],
 [
 "label",
-"GIVER"
-],
-[
-"label",
-"RECEIVER"
-],
-[
-"label",
-"OBSERVER"
-],
-[
-"label",
-"NEXT ACT"
+"GIVER · RECEIVER · OBSERVER · NEXT ACT"
 ],
 [
 "label",
@@ -3805,15 +3469,7 @@
 ],
 [
 "label",
-"WHAT IF IT IS SEEN?"
-],
-[
-"label",
-"WHAT IF IT INSPIRES ANOTHER?"
-],
-[
-"label",
-"WHAT IF THAT ACT IS SEEN?"
+"WHAT IF IT IS SEEN? · WHAT IF IT INSPIRES ANOTHER? · WHAT IF THAT ACT IS SEEN?"
 ],
 [
 "label",
@@ -3933,15 +3589,7 @@
 ],
 [
 "label",
-"PÁSALO PA’LANTE"
-],
-[
-"label",
-"THE SCIENCE OF KINDNESS"
-],
-[
-"label",
-"EXPLORE"
+"PÁSALO PA’LANTE · THE SCIENCE OF KINDNESS · EXPLORE"
 ],
 [
 "heading",
@@ -3979,31 +3627,7 @@
 ],
 [
 "label",
-"A"
-],
-[
-"label",
-"GIVER"
-],
-[
-"label",
-"B"
-],
-[
-"label",
-"RECEIVER"
-],
-[
-"label",
-"C"
-],
-[
-"label",
-"OBSERVER"
-],
-[
-"label",
-"MOTIVATED TO HELP"
+"A · GIVER · B · RECEIVER · C · OBSERVER · MOTIVATED TO HELP"
 ],
 [
 "heading",
@@ -4075,47 +3699,7 @@
 ],
 [
 "label",
-"GIVER"
-],
-[
-"label",
-"RECEIVER"
-],
-[
-"label",
-"WITNESSED BY"
-],
-[
-"label",
-"OBSERVER"
-],
-[
-"label",
-"MORAL"
-],
-[
-"label",
-"ELEVATION"
-],
-[
-"label",
-"PROSOCIAL"
-],
-[
-"label",
-"MOTIVATION"
-],
-[
-"label",
-"POTENTIAL"
-],
-[
-"label",
-"NEXT ACT"
-],
-[
-"label",
-"THE OBSERVER EFFECT"
+"GIVER · RECEIVER · WITNESSED BY · OBSERVER · MORAL · ELEVATION · PROSOCIAL · MOTIVATION · POTENTIAL · NEXT ACT · THE OBSERVER EFFECT"
 ],
 [
 "heading",
@@ -4191,11 +3775,7 @@
 ],
 [
 "label",
-"ACT OF"
-],
-[
-"label",
-"KINDNESS"
+"ACT OF · KINDNESS"
 ],
 [
 "heading",
@@ -4227,11 +3807,7 @@
 ],
 [
 "label",
-"EMOTIONAL"
-],
-[
-"label",
-"RESPONSE"
+"EMOTIONAL · RESPONSE"
 ],
 [
 "heading",
@@ -4239,11 +3815,7 @@
 ],
 [
 "label",
-"PROSOCIAL"
-],
-[
-"label",
-"MOTIVATION"
+"PROSOCIAL · MOTIVATION"
 ],
 [
 "heading",
@@ -4251,11 +3823,7 @@
 ],
 [
 "label",
-"POTENTIAL"
-],
-[
-"label",
-"NEXT ACT"
+"POTENTIAL · NEXT ACT"
 ],
 [
 "p",
@@ -4447,39 +4015,7 @@
 ],
 [
 "label",
-"BECOMES THE NEW GIVER"
-],
-[
-"label",
-"GIVER"
-],
-[
-"label",
-"ACT OF KINDNESS"
-],
-[
-"label",
-"RECEIVER"
-],
-[
-"label",
-"OBSERVER"
-],
-[
-"label",
-"ELEVATION"
-],
-[
-"label",
-"PROSOCIAL MOTIVATION"
-],
-[
-"label",
-"NEXT ACT"
-],
-[
-"label",
-"THE BEHAVIORAL CHAIN"
+"BECOMES THE NEW GIVER · GIVER · ACT OF KINDNESS · RECEIVER · OBSERVER · ELEVATION · PROSOCIAL MOTIVATION · NEXT ACT · THE BEHAVIORAL CHAIN"
 ],
 [
 "heading",
@@ -4507,11 +4043,7 @@
 ],
 [
 "label",
-"MAKE POSSIBILITY VISIBLE"
-],
-[
-"label",
-"THE CORE PRINCIPLE"
+"MAKE POSSIBILITY VISIBLE · THE CORE PRINCIPLE"
 ],
 [
 "heading",
@@ -4523,19 +4055,7 @@
 ],
 [
 "label",
-"1. EXPOSURE"
-],
-[
-"label",
-"2. EMOTION"
-],
-[
-"label",
-"3. MOTIVATION"
-],
-[
-"label",
-"4. ACTION"
+"1. EXPOSURE · 2. EMOTION · 3. MOTIVATION · 4. ACTION"
 ],
 [
 "heading",
@@ -4579,11 +4099,7 @@
 ],
 [
 "label",
-"ESTABLISHED EVIDENCE"
-],
-[
-"label",
-"JONATHAN HAIDT, 2003"
+"ESTABLISHED EVIDENCE · JONATHAN HAIDT, 2003"
 ],
 [
 "heading",
@@ -4641,31 +4157,7 @@
 ],
 [
 "label",
-"TRUST"
-],
-[
-"label",
-"BELONGING"
-],
-[
-"label",
-"COOPERATION"
-],
-[
-"label",
-"AGENCY"
-],
-[
-"label",
-"COLLECTIVE"
-],
-[
-"label",
-"CAPACITY"
-],
-[
-"label",
-"THE FOUNDATION"
+"TRUST · BELONGING · COOPERATION · AGENCY · COLLECTIVE · CAPACITY · THE FOUNDATION"
 ],
 [
 "p",
@@ -4729,11 +4221,7 @@
 ],
 [
 "label",
-"COMMUNITY"
-],
-[
-"label",
-"CAPACITY"
+"COMMUNITY · CAPACITY"
 ],
 [
 "p",
@@ -4797,39 +4285,7 @@
 ],
 [
 "label",
-"ISOLATED"
-],
-[
-"label",
-"DISCONNECTED"
-],
-[
-"label",
-"POWERLESS"
-],
-[
-"label",
-"ISOLATED"
-],
-[
-"label",
-"COLLECTIVE AGENCY"
-],
-[
-"label",
-"TRUST"
-],
-[
-"label",
-"COOPERATION"
-],
-[
-"label",
-"BELONGING"
-],
-[
-"label",
-"CAPACITY"
+"ISOLATED · DISCONNECTED · POWERLESS · ISOLATED · COLLECTIVE AGENCY · TRUST · COOPERATION · BELONGING · CAPACITY"
 ],
 [
 "p",
@@ -4905,23 +4361,7 @@
 ],
 [
 "label",
-"PEOPLE ACT"
-],
-[
-"label",
-"VISIBILITY"
-],
-[
-"label",
-"TRUST & CONNECTION"
-],
-[
-"label",
-"MORE PEOPLE ACT"
-],
-[
-"label",
-"TESTABLE SOCIAL FEEDBACK LOOP"
+"PEOPLE ACT · VISIBILITY · TRUST & CONNECTION · MORE PEOPLE ACT · TESTABLE SOCIAL FEEDBACK LOOP"
 ],
 [
 "p",
@@ -4985,31 +4425,7 @@
 ],
 [
 "label",
-"ESTABLISHED EVIDENCE"
-],
-[
-"label",
-"TRUST"
-],
-[
-"label",
-"BELONGING"
-],
-[
-"label",
-"COOPERATION"
-],
-[
-"label",
-"NEIGHBORHOOD RELATIONSHIPS"
-],
-[
-"label",
-"WILLINGNESS TO ACT"
-],
-[
-"label",
-"STRONGER COLLECTIVE EFFICACY"
+"ESTABLISHED EVIDENCE · TRUST · BELONGING · COOPERATION · NEIGHBORHOOD RELATIONSHIPS · WILLINGNESS TO ACT · STRONGER COLLECTIVE EFFICACY"
 ],
 [
 "heading",
@@ -5177,15 +4593,7 @@
 ],
 [
 "label",
-"SOMEONE SHOULD FIX THIS."
-],
-[
-"label",
-"WE CAN DO SOMETHING."
-],
-[
-"label",
-"WE DID."
+"SOMEONE SHOULD FIX THIS. · WE CAN DO SOMETHING. · WE DID."
 ],
 [
 "p",
@@ -5411,23 +4819,7 @@
 ],
 [
 "label",
-"CHECK-IN"
-],
-[
-"label",
-"MEAL"
-],
-[
-"label",
-"HELP"
-],
-[
-"label",
-"CHAT"
-],
-[
-"label",
-"AN IMPORTANT DISTINCTION"
+"CHECK-IN · MEAL · HELP · CHAT · AN IMPORTANT DISTINCTION"
 ],
 [
 "p",
@@ -5555,31 +4947,7 @@
 ],
 [
 "label",
-"DO I FEEL SEEN?"
-],
-[
-"label",
-"DO I FEEL KNOWN?"
-],
-[
-"label",
-"DO I BELONG?"
-],
-[
-"label",
-"DO I HAVE SOMEONE TO CALL?"
-],
-[
-"label",
-"DO I FEEL USEFUL?"
-],
-[
-"label",
-"DO I FEEL CONNECTED?"
-],
-[
-"label",
-"PEOPLE AROUND ME"
+"DO I FEEL SEEN? · DO I FEEL KNOWN? · DO I BELONG? · DO I HAVE SOMEONE TO CALL? · DO I FEEL USEFUL? · DO I FEEL CONNECTED? · PEOPLE AROUND ME"
 ],
 [
 "label",
@@ -5651,11 +5019,7 @@
 ],
 [
 "label",
-"EXPLORE THE EVIDENCE"
-],
-[
-"label",
-"ESTABLISHED EVIDENCE"
+"EXPLORE THE EVIDENCE · ESTABLISHED EVIDENCE"
 ],
 [
 "p",
@@ -5719,11 +5083,7 @@
 ],
 [
 "label",
-"STAGE 1"
-],
-[
-"label",
-"ONE ACT"
+"STAGE 1 · ONE ACT"
 ],
 [
 "p",
@@ -5731,11 +5091,7 @@
 ],
 [
 "label",
-"STAGE 2"
-],
-[
-"label",
-"RECOGNITION"
+"STAGE 2 · RECOGNITION"
 ],
 [
 "p",
@@ -5743,11 +5099,7 @@
 ],
 [
 "label",
-"STAGE 3"
-],
-[
-"label",
-"RELATIONSHIP"
+"STAGE 3 · RELATIONSHIP"
 ],
 [
 "p",
@@ -5755,11 +5107,7 @@
 ],
 [
 "label",
-"THE CYCLE OF BELONGING"
-],
-[
-"label",
-"RELATIONSHIP"
+"THE CYCLE OF BELONGING · RELATIONSHIP"
 ],
 [
 "heading",
@@ -5859,55 +5207,7 @@
 ],
 [
 "label",
-"STEP 01"
-],
-[
-"label",
-"ACT OF KINDNESS"
-],
-[
-"label",
-"STEP 02"
-],
-[
-"label",
-"HUMAN INTERACTION"
-],
-[
-"label",
-"STEP 03"
-],
-[
-"label",
-"FEELING SEEN"
-],
-[
-"label",
-"STEP 04"
-],
-[
-"label",
-"CONNECTION"
-],
-[
-"label",
-"STEP 05"
-],
-[
-"label",
-"POTENTIAL BELONGING"
-],
-[
-"label",
-"STEP 06"
-],
-[
-"label",
-"REPEAT INTERACTION"
-],
-[
-"label",
-"THE DEEPER OPPORTUNITY"
+"STEP 01 · ACT OF KINDNESS · STEP 02 · HUMAN INTERACTION · STEP 03 · FEELING SEEN · STEP 04 · CONNECTION · STEP 05 · POTENTIAL BELONGING · STEP 06 · REPEAT INTERACTION · THE DEEPER OPPORTUNITY"
 ],
 [
 "heading",
@@ -5987,11 +5287,7 @@
 ],
 [
 "label",
-"BELONGING"
-],
-[
-"label",
-"AN IMPORTANT DISTINCTION"
+"BELONGING · AN IMPORTANT DISTINCTION"
 ],
 [
 "p",
@@ -6151,11 +5447,7 @@
 ],
 [
 "label",
-"ACT OF"
-],
-[
-"label",
-"KINDNESS"
+"ACT OF · KINDNESS"
 ],
 [
 "heading",
@@ -6163,11 +5455,7 @@
 ],
 [
 "label",
-"HUMAN"
-],
-[
-"label",
-"INTERACTION"
+"HUMAN · INTERACTION"
 ],
 [
 "heading",
@@ -6175,11 +5463,7 @@
 ],
 [
 "label",
-"FEELING"
-],
-[
-"label",
-"SEEN"
+"FEELING · SEEN"
 ],
 [
 "heading",
@@ -6187,11 +5471,7 @@
 ],
 [
 "label",
-"CONNECTION"
-],
-[
-"label",
-"ESTABLISHED"
+"CONNECTION · ESTABLISHED"
 ],
 [
 "heading",
@@ -6199,11 +5479,7 @@
 ],
 [
 "label",
-"POTENTIAL"
-],
-[
-"label",
-"BELONGING"
+"POTENTIAL · BELONGING"
 ],
 [
 "heading",
@@ -6211,11 +5487,7 @@
 ],
 [
 "label",
-"REPEAT"
-],
-[
-"label",
-"INTERACTION"
+"REPEAT · INTERACTION"
 ],
 [
 "p",
@@ -6227,19 +5499,7 @@
 ],
 [
 "label",
-"SOMEONE CAN CHECK IN."
-],
-[
-"label",
-"SOMEONE CAN INVITE."
-],
-[
-"label",
-"SOMEONE CAN HELP."
-],
-[
-"label",
-"SOMEONE CAN LISTEN."
+"SOMEONE CAN CHECK IN. · SOMEONE CAN INVITE. · SOMEONE CAN HELP. · SOMEONE CAN LISTEN."
 ],
 [
 "label",
@@ -6781,19 +6041,7 @@
 ],
 [
 "label",
-"INTENTION → ACTION"
-],
-[
-"label",
-"HUMAN CONNECTION"
-],
-[
-"label",
-"PSYCHOLOGICAL EXPERIENCE"
-],
-[
-"label",
-"ESTABLISHED EVIDENCE"
+"INTENTION → ACTION · HUMAN CONNECTION · PSYCHOLOGICAL EXPERIENCE · ESTABLISHED EVIDENCE"
 ],
 [
 "p",
@@ -7129,15 +6377,7 @@
 ],
 [
 "label",
-"LONELINESS"
-],
-[
-"label",
-"ESTABLISHED EVIDENCE"
-],
-[
-"label",
-"NEXT MODULE"
+"LONELINESS · ESTABLISHED EVIDENCE · NEXT MODULE"
 ],
 [
 "heading",
@@ -7145,11 +6385,7 @@
 ],
 [
 "label",
-"MEASURING"
-],
-[
-"label",
-"ESTABLISHED EVIDENCE"
+"MEASURING · ESTABLISHED EVIDENCE"
 ],
 [
 "p",
@@ -7157,11 +6393,7 @@
 ],
 [
 "label",
-"PASS KINDNESS FORWARD"
-],
-[
-"label",
-"THE SCIENCE OF KINDNESS"
+"PASS KINDNESS FORWARD · THE SCIENCE OF KINDNESS"
 ],
 [
 "heading",
@@ -7235,11 +6467,7 @@
 ],
 [
 "label",
-"EXPLORATORY"
-],
-[
-"label",
-"PHYSICAL SYSTEMS"
+"EXPLORATORY · PHYSICAL SYSTEMS"
 ],
 [
 "heading",
@@ -7247,31 +6475,7 @@
 ],
 [
 "label",
-"COORDINATED"
-],
-[
-"label",
-"KINDNESS"
-],
-[
-"label",
-"ONE DEFINED EVENT"
-],
-[
-"label",
-"BEFORE"
-],
-[
-"label",
-"DURING"
-],
-[
-"label",
-"AFTER"
-],
-[
-"label",
-"WHAT ACTUALLY CHANGED?"
+"COORDINATED · KINDNESS · ONE DEFINED EVENT · BEFORE · DURING · AFTER · WHAT ACTUALLY CHANGED?"
 ],
 [
 "p",
@@ -7387,35 +6591,7 @@
 ],
 [
 "label",
-"INDIVIDUAL"
-],
-[
-"label",
-"PHYSIOLOGICAL"
-],
-[
-"label",
-"SOCIAL"
-],
-[
-"label",
-"BEHAVIORAL"
-],
-[
-"label",
-"COMMUNITY"
-],
-[
-"label",
-"EXPLORATORY PHYSICAL SYSTEMS"
-],
-[
-"label",
-"ONE DEFINED EVENT WINDOW"
-],
-[
-"label",
-"MULTI-DOMAIN ANALYSIS"
+"INDIVIDUAL · PHYSIOLOGICAL · SOCIAL · BEHAVIORAL · COMMUNITY · EXPLORATORY PHYSICAL SYSTEMS · ONE DEFINED EVENT WINDOW · MULTI-DOMAIN ANALYSIS"
 ],
 [
 "p",
@@ -7479,27 +6655,7 @@
 ],
 [
 "label",
-"PARTICIPATION"
-],
-[
-"label",
-"PHYSIOLOGICAL"
-],
-[
-"label",
-"DEFINED CAMPAIGN WINDOW"
-],
-[
-"label",
-"BEHAVIORAL"
-],
-[
-"label",
-"COMMUNITY"
-],
-[
-"label",
-"SENSOR DATA"
+"PARTICIPATION · PHYSIOLOGICAL · DEFINED CAMPAIGN WINDOW · BEHAVIORAL · COMMUNITY · SENSOR DATA"
 ],
 [
 "p",
@@ -7723,11 +6879,7 @@
 ],
 [
 "label",
-"MEASURING"
-],
-[
-"label",
-"KINDNESS"
+"MEASURING · KINDNESS"
 ],
 [
 "heading",
@@ -7967,23 +7119,7 @@
 ],
 [
 "label",
-"BEFORE"
-],
-[
-"label",
-"HIGH"
-],
-[
-"label",
-"DURING"
-],
-[
-"label",
-"LOW"
-],
-[
-"label",
-"AFTER"
+"BEFORE · HIGH · DURING · LOW · AFTER"
 ],
 [
 "heading",
@@ -8043,11 +7179,7 @@
 ],
 [
 "label",
-"SOCIAL"
-],
-[
-"label",
-"EXPERIENCE"
+"SOCIAL · EXPERIENCE"
 ],
 [
 "heading",
@@ -8355,23 +7487,7 @@
 ],
 [
 "label",
-"PARTICIPATION"
-],
-[
-"label",
-"PHYSIOLOGICAL"
-],
-[
-"label",
-"DEFINED CAMPAIGN WINDOW"
-],
-[
-"label",
-"BEHAVIORAL"
-],
-[
-"label",
-"COMMUNITY / SENSOR"
+"PARTICIPATION · PHYSIOLOGICAL · DEFINED CAMPAIGN WINDOW · BEHAVIORAL · COMMUNITY / SENSOR"
 ],
 [
 "p",
