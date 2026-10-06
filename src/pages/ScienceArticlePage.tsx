@@ -21,7 +21,7 @@ const ScienceArticlePage = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <SEO title={`${article.title} — The Science of Kindness`} description={concept?.body ?? article.title} />
+      <SEO title={`${article.title} — The Science of Kindness`} description={concept?.body ?? article.title} path={`/science/${slug}`} />
       <ScrollToTop />
       <Navbar />
       <main className="pt-28 pb-20 px-6">
