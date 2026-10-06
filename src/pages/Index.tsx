@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import LiveFromWall from "@/components/LiveFromWall";
@@ -6,7 +7,9 @@ import TheStory from "@/components/TheStory";
 import HowItWorks from "@/components/HowItWorks";
 import AnthemSection from "@/components/AnthemSection";
 import ScienceProof from "@/components/ScienceProof";
-import GlobalMap from "@/components/GlobalMap";
+// Lazy: pulls in react-simple-maps + d3 (~50KB), and sits well below the
+// fold, so there's no reason for it to delay the initial page load.
+const GlobalMap = lazy(() => import("@/components/GlobalMap"));
 import Testimonials from "@/components/Testimonials";
 import VisualTransition from "@/components/VisualTransition";
 import TwoPaths from "@/components/TwoPaths";
@@ -21,8 +24,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Pass Kindness Forward — One Act Can Inspire Another"
-        description="Join Pass Kindness Forward and help spark 1 billion acts of kindness worldwide. One act can inspire another."
+        title="Pásalo Pa'lante — Sparking 1 Billion Acts of Kindness Worldwide"
+        description="Join Pásalo Pa'lante, a global kindness movement by Te Amo PR. Commit, share, and ripple 1 billion acts of kindness from Nov 1 to Jan 31."
         path="/"
       />
       <Navbar />
@@ -32,7 +35,9 @@ const Index = () => {
       <AnthemSection />
       <TheStory />
       <ScienceProof />
-      <GlobalMap />
+      <Suspense fallback={<div className="section-padding section-spacing min-h-[400px]" />}>
+        <GlobalMap />
+      </Suspense>
       <Testimonials />
       <VisualTransition />
       <TwoPaths />

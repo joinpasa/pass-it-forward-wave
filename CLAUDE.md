@@ -1,0 +1,77 @@
+# Working in this repo
+
+See `README.md` for the project layout (apps/website, apps/app, packages/shared, supabase/). This file is operational notes for Claude Code sessions — including teammates' own accounts working on the same repo.
+
+## Deploys
+
+- **Frontend (`apps/website`, `apps/app`)**: auto-deploys via Cloudflare on push to the tracked branch. Nothing manual needed after a push.
+- **Supabase edge functions and migrations**: also auto-deploy now, via `.github/workflows/deploy-supabase.yml` — a push to the tracked branch touching `supabase/**` runs `supabase db push` then `supabase functions deploy` in GitHub Actions. This requires the `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD` repo secrets to be set (Settings → Secrets and variables → Actions on GitHub); if they're missing or wrong, the workflow run fails visibly in the Actions tab rather than silently no-op'ing.
+  - **Fallback**: if the Action is failing (bad secret, Supabase outage, whatever) and something needs to go out now, it can still be pushed by hand: `supabase db push` / `supabase functions deploy <name> --no-verify-jwt` from a terminal with the CLI linked (`supabase link --project-ref tipfbleltjexofsjffwb`). This can't be done from a sandboxed/remote Claude Code session — no network path to `*.supabase.co` from there.
+  - If a fresh checkout's migration history is out of sync with what's actually live (CLI wants to replay everything from scratch), that's a bookkeeping problem, not a real conflict — see `supabase migration list` / `supabase migration repair --status applied <versions...>` before assuming anything is broken.
+
+After pushing a change to `supabase/**`, check the Actions tab (or ask the user to) rather than assuming it deployed — a red run there means it didn't ship.
+
+## Combining the two domains (app under pasalopalante.com/app)
+
+`npm run build:combined` (`scripts/build-combined.mjs`) builds a single deployment with the website at `/` and the app embedded at `/app/*` on the same origin — this is what makes a true one-tap "Get the app → native install dialog" possible (no origin can trigger a *different* origin's install prompt, which is why the current two-domain setup needs a redirect hop first). It's additive and already merged — `build:website`/`build:app` are unaffected, verified byte-for-byte identical to before. It does **not** go live on its own. To actually cut over:
+
+1. In the Cloudflare dashboard, change the `pasalopalante.com` project's build command to `npm run build:combined` (root directory: repo root, output directory: `apps/website/dist`).
+2. Point `app.pasalopalante.com` at a redirect to `pasalopalante.com/app/$1` (the old subdomain needs to keep working for existing bookmarks/printed QR codes — don't just delete it).
+3. Add `https://pasalopalante.com/app/**` to Supabase's Auth → URL Configuration → Redirect URLs allow-list (magic links, password reset, etc. depend on this).
+4. Once confirmed working, the old `app.pasalopalante.com`-only Cloudflare project's build can stop running — traffic is fully served from the `pasalopalante.com` project by then.
+
+Until all of that happens, both domains keep working exactly as they do today, independently, unaffected by this build script's existence.
+
+## Set real git identity at the start of every session
+
+
+This repo is worked on by more than one person, each through their own Claude Code account. By default every environment commits as generic `Claude <noreply@anthropic.com>`, which makes it impossible to tell from git alone who asked for what. Fix that at the start of each session, before making any commit: if this session's context gives you a `userEmail`, run
+
+```
+git config user.name "<local-part of the email> (Claude Code)"
+git config user.email "<the actual userEmail>"
+```
+
+(e.g. `git config user.name "va.deedumlao (Claude Code)"` / `git config user.email "va.deedumlao@gmail.com"`). This only sets local repo config for this session's commits going forward — it doesn't rewrite any existing history. If no `userEmail` is available in context, leave the default as-is rather than guessing.
+
+## Keep CHANGELOG.md current
+
+`CHANGELOG.md` is still the readable, human-facing record — git log is not something anyone should have to read to find out what shipped and why. Keep it current:
+
+1. After finishing a real, user-facing or functionally meaningful change (a fix, a feature, a behavior change) — not a typo or a comment tweak — add an entry to `CHANGELOG.md`.
+2. Entries are newest-first. If there's already a section for today's date at the top, add your bullet(s) there. Otherwise add a new `## YYYY-MM-DD — <requester>` section above the previous one.
+3. `<requester>` is whoever asked for the change this session — use the `userEmail` given in this session's own context. If genuinely unclear (e.g. a self-initiated cleanup), use `team`.
+4. Write the bullet in plain, non-technical language — what changed and why it matters, not a restatement of the diff. One or two sentences is usually enough; group multiple related commits from the same piece of work into one bullet rather than listing each commit.
+5. Don't edit or renumber older entries. This is a log, not a living doc.
+
+## Auth flows are fragile — verify before marking any shared-code task done
+
+Login, signup, account creation, and forgot-password break easily from changes 
+that had nothing to do with auth — a layout tweak, a color/theme token swap, a 
+shared component edit, a routing change. This has happened repeatedly and is 
+the main source of "the app isn't working" reports from the team.
+
+**Rule:** before marking a task complete, if the session touched any of the 
+following, verify the four auth flows still work:
+- Shared layout components (headers, footers, nav, modals, form wrappers)
+- Global CSS / theme / color tokens / design system files
+- Routing config
+- Anything in `packages/shared`
+
+**Verification, in order of cost:**
+1. Cheapest — read the diff and reason about whether it could plausibly touch 
+   auth-rendering paths. If clearly unrelated (e.g. a copy-only change to the 
+   Donate page), skip the rest.
+2. If plausibly affected — actually load `/login`, `/signup`, and the 
+   forgot-password page in a browser/preview and confirm they render and the 
+   forms submit. Don't just check that the build didn't error; a page can 
+   build fine and still render broken (missing theme variable, broken import).
+3. If something's broken — fix it as part of the same task, before considering 
+   the task done. Don't hand back a task that silently broke auth even if that 
+   wasn't what was asked.
+
+If you can't verify live rendering in this session (e.g. sandboxed with no 
+browser), say so explicitly in your summary to the user instead of assuming 
+it's fine — "I changed shared layout files but could not verify login/signup 
+still render; please check before considering this done" is the honest and 
+correct thing to say.

@@ -7,9 +7,8 @@ interface SEOProps {
   image?: string;
 }
 
-const SITE_URL = "https://passkindnessforward.com";
-const DEFAULT_IMAGE =
-  "https://passkindnessforward.com/__l5e/assets-v1/317502d6-7f7b-4ef3-9eba-1009dd329054/pass-kindness-forward-share-logo.jpg";
+const SITE_URL = "https://pasalopalante.com";
+const DEFAULT_IMAGE = `${SITE_URL}/social-share.webp`;
 
 function setMeta(attr: "name" | "property", key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);

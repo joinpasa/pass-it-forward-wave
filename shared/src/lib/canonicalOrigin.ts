@@ -1,4 +1,3 @@
-declare const __CANONICAL_ORIGIN__: string;
 /**
  * The origin emailed links (magic link, signup confirmation, password
  * reset) should point to. Whatever domain this build is actually being

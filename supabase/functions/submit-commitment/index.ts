@@ -8,13 +8,14 @@ const corsHeaders = {
 
 const TYPES = ["individual", "organization"] as const;
 const HELP_ROLES = ["do_acts", "champion", "ambassador", "civic", "volunteer"] as const;
-const ORG_TYPES = ["school", "company", "nonprofit", "ngo", "faith", "other"] as const;
+const ORG_TYPES = ["school", "company", "nonprofit", "ngo", "municipality", "faith", "other"] as const;
 
 interface Body {
   type: string;
   first_name?: string;
   last_name?: string;
   email?: string;
+  phone?: string;
   org_name?: string;
   chapter?: string;
   org_website?: string;
@@ -47,6 +48,7 @@ Deno.serve(async (req) => {
     const firstName = (body.first_name ?? "").toString().trim().slice(0, 60);
     const lastName = (body.last_name ?? "").toString().trim().slice(0, 60);
     const email = (body.email ?? "").toString().trim().slice(0, 200);
+    const phone = (body.phone ?? "").toString().trim().slice(0, 40);
     const orgNameRaw = (body.org_name ?? "").toString().trim().slice(0, 120);
     const chapter = (body.chapter ?? "").toString().trim().slice(0, 120);
     const orgName = chapter ? `${orgNameRaw} — ${chapter}`.slice(0, 240) : orgNameRaw;
@@ -69,21 +71,21 @@ Deno.serve(async (req) => {
     }
 
     // Lightweight AI safety check on the message only (optional)
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     let safe = true;
     let reason: string | null = null;
     let language = "en";
 
-    if (message && LOVABLE_API_KEY) {
+    if (message && GEMINI_API_KEY) {
       try {
-        const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        const aiRes = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            Authorization: `Bearer ${GEMINI_API_KEY}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "google/gemini-3-flash-preview",
+            model: Deno.env.get("GEMINI_MODEL") || "gemini-3.6-flash",
             messages: [
               {
                 role: "system",
@@ -158,6 +160,7 @@ Deno.serve(async (req) => {
         first_name: firstName || null,
         last_name: lastName || null,
         email: email || null,
+        phone: phone || null,
         org_name: orgName || null,
         org_website: orgWebsite || null,
         pledge_count: pledgeCount,
@@ -230,6 +233,32 @@ Deno.serve(async (req) => {
       } catch (e) {
         console.error("org provisioning error", e);
       }
+    }
+
+    // Refresh this contact's GHL totals (acts + pledges) fire-and-forget —
+    // same non-blocking dispatch pattern used in submit-act.
+    try {
+      const task = fetch(`${SUPABASE_URL}/functions/v1/ghl-sync-totals`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${SERVICE_ROLE}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mode: "user", email }),
+      })
+        // fetch() only rejects on a network-level failure - a non-2xx
+        // response (missing GHL secrets, a rejected custom field, an auth
+        // mismatch) resolved normally and was previously invisible here,
+        // since nothing checked response.ok. Log the body on failure so a
+        // real cause shows up in this function's logs going forward.
+        .then(async (res) => {
+          if (!res.ok) console.error("ghl-sync-totals dispatch failed", res.status, await res.text());
+        })
+        .catch((e) => console.error("ghl-sync-totals dispatch error", e));
+      // @ts-ignore EdgeRuntime is available in Supabase Edge Functions
+      if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(task);
+    } catch (e) {
+      console.error("ghl-sync-totals dispatch error", e);
     }
 
     // Return updated totals

@@ -1,4 +1,3 @@
-declare const __APP_BASE_URL__: string;
 // The combined build (scripts/build-combined.mjs) puts the website AND the
 // app on one origin, and any domain a Cloudflare route points at that same
 // Worker gets that exact same build — including co-brand marketing domains

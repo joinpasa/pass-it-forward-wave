@@ -66,6 +66,7 @@ export type Database = {
           tag_confidence: Json | null
           tags: string[] | null
           terms_version: string | null
+          to_user_id: string | null
           type_tag: string | null
           user_agent: string | null
           user_id: string | null
@@ -90,6 +91,7 @@ export type Database = {
           tag_confidence?: Json | null
           tags?: string[] | null
           terms_version?: string | null
+          to_user_id?: string | null
           type_tag?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -114,6 +116,7 @@ export type Database = {
           tag_confidence?: Json | null
           tags?: string[] | null
           terms_version?: string | null
+          to_user_id?: string | null
           type_tag?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -501,6 +504,27 @@ export type Database = {
         }
         Relationships: []
       }
+      pass_handoffs: {
+        Row: {
+          created_at: string
+          from_user_id: string
+          id: string
+          to_user_id: string
+        }
+        Insert: {
+          created_at?: string
+          from_user_id: string
+          id?: string
+          to_user_id: string
+        }
+        Update: {
+          created_at?: string
+          from_user_id?: string
+          id?: string
+          to_user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -515,6 +539,7 @@ export type Database = {
           id: string
           language: string | null
           last_name: string | null
+          onboarding_seen: boolean
           org_name: string | null
           org_type: string | null
           phone: string | null
@@ -543,6 +568,7 @@ export type Database = {
           id?: string
           language?: string | null
           last_name?: string | null
+          onboarding_seen?: boolean
           org_name?: string | null
           org_type?: string | null
           phone?: string | null
@@ -571,6 +597,7 @@ export type Database = {
           id?: string
           language?: string | null
           last_name?: string | null
+          onboarding_seen?: boolean
           org_name?: string | null
           org_type?: string | null
           phone?: string | null
@@ -689,6 +716,35 @@ export type Database = {
           reason?: string
         }
         Relationships: []
+      }
+      thanks: {
+        Row: {
+          act_id: string
+          created_at: string
+          from_user_id: string
+          id: string
+        }
+        Insert: {
+          act_id: string
+          created_at?: string
+          from_user_id: string
+          id?: string
+        }
+        Update: {
+          act_id?: string
+          created_at?: string
+          from_user_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "thanks_act_id_fkey"
+            columns: ["act_id"]
+            isOneToOne: false
+            referencedRelation: "acts_of_kindness"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_badges: {
         Row: {
@@ -860,6 +916,13 @@ export type Database = {
           acts: number
           commitments: number
           country: string
+        }[]
+      }
+      log_pass_handoff: {
+        Args: { _code: string }
+        Returns: {
+          from_name: string
+          from_user_id: string
         }[]
       }
       move_to_dlq: {
