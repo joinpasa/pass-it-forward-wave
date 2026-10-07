@@ -43,6 +43,7 @@ const Navbar = () => {
     { label: t.mapPage.title, href: "/map" },
     { label: t.navbar.about, href: "/about" },
     { label: lang === "es" ? "Ciencia" : "Science", href: "/science" },
+    { label: lang === "es" ? "Socios" : "Partners", href: "/partners" },
     // Partners page is in draft — not linked from nav until it's approved to go live.
     { label: t.navbar.ourStory, anchor: "story" },
     { label: t.navbar.getInvolved, href: "/get-involved" },
